@@ -122,7 +122,6 @@ create table order_events (
   resolved_by uuid
 );
 
-alter table organizations enable row level security;
 alter table restaurants enable row level security;
 alter table restaurant_areas enable row level security;
 alter table tables enable row level security;
