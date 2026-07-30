@@ -2,7 +2,7 @@
 
 > Design system: [DESIGN.md](./DESIGN.md) ("Balcão Quente")
 > Exploração de layout (histórico): [Artifact — 3 Direções de Layout](https://claude.ai/code/artifact/1937a790-3ec2-4462-bd9d-bb7c68379f7f)
-> Desenvolvimento real em código (Next.js + Supabase) a partir de 2026-07-29 — ver [[project_scope_decision]]. Não usamos mais Stitch/MCP para gerar telas.
+> Desenvolvimento real em código (Next.js + Supabase) a partir de 2026-07-29 — ver [[project_scope_decision]]. Stitch/MCP voltou a ser usado a partir de 2026-07-30 como ferramenta de mockup visual (landing, login, admin) antes da implementação em código — ver projeto "ConsumoSmart - Landing & Login v2" no Stitch.
 
 Status: `[ ]` não iniciada · `[~]` em progresso · `[x]` implementada em código
 
@@ -68,7 +68,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 
 ### Fase 1 (Avançado)
 - [ ] 0.4 Cadastro Público de Estabelecimento (Autoatendimento) — página aberta no site do ConsumoSmart, geralmente acessada a partir da Landing Page (tela 0.0), onde o próprio dono/gerente de um estabelecimento se cadastra sozinho, sem falar com o admin: preenche os dados do negócio (incluindo endereço/geolocalização), escolhe um dos 3 planos e cria sua própria conta de responsável. Resultado idêntico ao da tela 0.3, só que sem intervenção manual sua.
-- [ ] 0.5 Gestão de Planos & Preços — cadastro dos 3 planos vendidos (Starter, Essencial, Pro): nome, preço e quais funcionalidades cada um libera (autoatendimento, KDS, reserva de mesa, fiscal, estoque avançado/ficha técnica, DRE, financeiro, fornecedores, "Comissões"). É essa tela que liga/desliga cada funcionalidade paga por estabelecimento, de acordo com o plano contratado — inclusive o caso especial da tela 26 (NFC-e), que tem um limite mensal de notas no Essencial e é ilimitada no Pro.
+- [x] 0.5 Gestão de Planos & Preços — `src/app/admin/planos/`. Admin edita preço e liga/desliga cada funcionalidade (autoatendimento, KDS, reserva de mesa, fiscal + limite mensal de notas, estoque avançado, financeiro, fornecedores, comissões) dos 3 planos, com `src/lib/plans.ts` compartilhado entre admin e Landing Page — a 0.0 busca preço/features direto da tabela `plans` (migration `..._public_plans.sql` liberou leitura pública). Implementada em 2026-07-30. **Pendência:** sem histórico de alterações (não existe auditoria de quem mudou o quê e quando).
 
 ## Módulo 1 — Projeto & Design System
 
