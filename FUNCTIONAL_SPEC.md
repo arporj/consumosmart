@@ -68,6 +68,7 @@ O ConsumoSmart é vendido em 3 planos fixos, mostrados lado a lado na Landing Pa
 - **Marca própria (white-label):** subir a logo do estabelecimento e, se quiser, personalizar as cores para que o sistema (inclusive o app que o cliente usa na mesa) pareça "do restaurante", não do ConsumoSmart.
 - **Equipe:** cadastrar as pessoas que trabalham no estabelecimento — garçom, caixa, cozinha, bar, etc. — e o papel de cada uma. Isso é feito diretamente aqui, pelo próprio responsável, sem precisar pedir para o admin do sistema. Uma mesma pessoa pode estar cadastrada em mais de um estabelecimento seu (ex. uma rede com 2 unidades) usando o mesmo login. *(liberado em todos os planos)*
 - **Quem está logado agora:** painel em tempo real mostrando quem da equipe está com acesso aberto no sistema neste momento, e desde que horário. Não existe restrição de horário para logar — qualquer pessoa da equipe pode entrar quando precisar — então este painel é a forma de o dono/gerente ter visibilidade sobre acessos incomuns sem travar ninguém no meio do expediente. *(liberado em todos os planos)*
+- **Identificação do cliente no check-in:** uma preferência que você liga ou desliga — se ligada, todo cliente que faz check-in numa mesa (Área 4) precisa informar nome, CPF e telefone antes de continuar; se desligada (padrão), o check-in segue sem pedir nada. Útil se você quer construir uma base de clientes ou já adiantar o CPF para quando for emitir a nota fiscal. *(liberado em todos os planos — mas só faz sentido em planos que têm autoatendimento/check-in ligado, ou seja, Essencial e Pro)*
 - **Relatórios:** acompanhar vendas, faturamento e desempenho do estabelecimento; o plano Pro soma a isso o DRE.
 - **Reservas:** registrar reserva de mesa com nome, telefone, horário e número de pessoas. *(planos Essencial e Pro)*
 - **Nota fiscal:** emissão do documento fiscal exigido por lei para cada venda. *(planos Essencial — com limite de notas por mês — e Pro, ilimitado; não incluso no Starter)*
@@ -103,7 +104,7 @@ O ConsumoSmart é vendido em 3 planos fixos, mostrados lado a lado na Landing Pa
 **Para que serve:** dar ao cliente autonomia para ver o cardápio, pedir e acompanhar o pedido sem precisar chamar o garçom para tudo — e permitir que o mesmo aplicativo funcione em qualquer restaurante que use o ConsumoSmart, não só em um.
 
 **O que dá para fazer aqui:**
-- **Entrar na mesa** apontando a câmera do celular para um código (QR Code) que fica na própria mesa — isso identifica automaticamente o restaurante e a mesa, sem precisar digitar nada.
+- **Entrar na mesa** apontando a câmera do celular para um código (QR Code) que fica na própria mesa — isso identifica automaticamente o restaurante e a mesa, sem precisar digitar nada. Se o restaurante tiver ligada a preferência de identificação (Área 2), aparece um form pedindo nome, CPF e telefone antes de liberar o check-in; se não, o cliente entra direto.
 - **Ver o cardápio** daquele restaurante, com fotos, descrição e preço de cada item.
 - **Montar e revisar o pedido** antes de confirmar; enquanto um item ainda não entrou em preparo na cozinha, o próprio cliente pode cancelá-lo sozinho — depois disso, só o garçom consegue.
 - **Acompanhar o andamento** de cada item pedido (recebido → em preparo → pronto → entregue), em tempo real.

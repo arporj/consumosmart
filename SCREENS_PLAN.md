@@ -69,7 +69,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 
 ## Módulo 1 — Projeto & Design System
 
-- [x] Schema inicial em `supabase/migrations/` (arquivos nomeados `yyyymmddhhmmss_nome_da_migracao.sql`, aplicados ao projeto Supabase "arrc"): organizations, restaurants (+ plano/status/origem do cadastro), tables, product_categories, products, orders, order_items, order_payments, order_events, plans, staff, system_admins, cash_sessions, cash_movements, stock_items, stock_movements, product_recipe_items, suppliers, supplier_prices, financial_entries, reservations, fiscal_invoices, staff_attendance, salary_advances, service_charge_distributions, service_charge_shares, payroll_runs, payroll_items — cobre a estrutura de dados de todos os módulos documentados, mesmo os ainda `[ ]` não implementados em tela.
+- [x] Schema inicial em `supabase/migrations/` (arquivos nomeados `yyyymmddhhmmss_nome_da_migracao.sql`, aplicados ao projeto Supabase "arrc"): organizations, restaurants (+ plano/status/origem do cadastro), tables, product_categories, products, orders, order_items, order_payments, order_events, plans, staff, system_admins, cash_sessions, cash_movements, stock_items, stock_movements, product_recipe_items, suppliers, supplier_prices, financial_entries, reservations, fiscal_invoices, staff_attendance, salary_advances, service_charge_distributions, service_charge_shares, payroll_runs, payroll_items, order_checkins (+ `restaurants.require_customer_checkin_info`) — cobre a estrutura de dados de todos os módulos documentados, mesmo os ainda `[ ]` não implementados em tela.
 - [x] Scaffold Next.js (App Router) + TypeScript + Tailwind v4, tokens do Balcão Quente em `src/app/globals.css`.
 
 ## Módulo 2 — POS / Atendimento
@@ -97,7 +97,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 ## Módulo 4 — App do Cliente (Mobile First)
 
 ### Fase 0
-- [ ] 13. Check-in via QR Code
+- [ ] 13. Check-in via QR Code — se o estabelecimento tiver ligada a opção "exigir identificação no check-in" (tela 35), um form pede nome, CPF e telefone do cliente antes de liberar o check-in; a resposta vai para `order_checkins`. Se a opção estiver desligada (padrão), check-in segue direto, sem form.
 - [ ] 14. Cardápio do Cliente Interativo
 - [ ] 15. Revisão do Pedido — cliente pode cancelar item individual enquanto o status ainda for `pending` (item não marcado "em preparo" na tela 12); botão de cancelar some/desabilita assim que a cozinha inicia o preparo
 - [ ] 16. Acompanhamento do Pedido (timeline) — reflete o status por item (`pending`/`preparing`/...) que também governa se o cancelamento (tela 15) ainda está disponível
@@ -111,6 +111,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 - [ ] 20. Cadastro de Produtos & Cardápio
 - [ ] 21. Cadastro & Layout de Mesas
 - [ ] 22. Configuração White-Label do Restaurante
+- [ ] 35. Configurações Gerais do Estabelecimento — preferências operacionais que não são cardápio/mesas/marca; primeira opção: "exigir nome, CPF e telefone do cliente no check-in" (liga/desliga o form da tela 13). Pensada como lugar único para próximos toggles do tipo, em vez de criar uma tela nova a cada preferência simples. Adicionado em 2026-07-30, a pedido do usuário.
 
 ### Fase 1 (Avançado)
 - [ ] 23. Dashboard de Vendas / Relatórios (**escopo ampliado em 2026-07-30:** inclui DRE — Demonstrativo de Resultado — exclusivo do plano Pro, ver decisão "Estrutura de 3 Planos")
@@ -138,9 +139,9 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 
 | Fase | Telas | Feitas |
 |---|---|---|
-| Fase 0 (Demo) | 25 | 5/25 |
+| Fase 0 (Demo) | 26 | 5/26 |
 | Fase 1 (Retaguarda + RH) | 16 | 0/16 |
-| **Total** | **41** | **5/41** |
+| **Total** | **42** | **5/42** |
 
 Próxima fatia sugerida: tela 1 (Login Único Multi-Papéis) — resolve as pendências de "vínculo do garçom" nas telas 3 e 4 — ou Módulo 3 (KDS), que fecha o ciclo atendimento↔cozinha usando os `order_items` que já existem no schema. Telas 0.0, 0.1, 0.2, 0.3 e 0.6 também são pré-requisito real: sem elas não existe forma de mostrar o produto, cadastrar um estabelecimento e seu responsável, nem dar suporte a ele, fora do banco de dados direto. Telas 0.4 (autoatendimento) e 0.5 (planos e preços) ficam na Fase 1 mas já têm o modelo de cobrança definido (3 planos — ver "Decisões tomadas"), então podem furar a fila se fizer sentido comercialmente.
 
@@ -157,3 +158,5 @@ Itens adicionados em 2026-07-30, 4ª rodada (a pedido do usuário, resolve a dec
 Itens adicionados em 2026-07-30, 5ª rodada (a pedido do usuário): schema do banco expandido com todas as tabelas restantes da retaguarda documentada nas rodadas anteriores (plans, staff, system_admins, caixa, estoque/ficha técnica, fornecedores, financeiro, fiscal, reservas, "Comissões") — aplicadas ao projeto Supabase "arrc" e versionadas em `supabase/migrations/`. Migrations locais renomeadas de `0001_init.sql` para a convenção `yyyymmddhhmmss_nome_da_migracao.sql` (14 dígitos, não só `yyyymmdd` — ver ressalva na resposta ao usuário), divididas em arquivos que espelham exatamente as migrations já aplicadas no banco remoto.
 
 Itens adicionados em 2026-07-30, 6ª rodada (a pedido do usuário, com uma ideia dele adotada e outra descartada por recomendação deste assistente): tela 1 atualizada para cobrir funcionário com vínculo em mais de um estabelecimento (escolhe qual ao logar); nova tela 34 (Painel de Presença, tempo real); decisão em aberto anterior sobre bloquear login fora de escala **descartada** (viraria fricção operacional sem ganho de segurança real) em favor de registro de login + painel de presença. A ideia de notificar o gestor via WhatsApp a cada login — cogitada como evolução do painel, mas não implementada agora — está registrada em [IDEAS_BACKLOG.md](./IDEAS_BACKLOG.md), fora deste plano e do FUNCTIONAL_SPEC porque ainda é só uma ideia futura, não uma tela decidida.
+
+Itens adicionados em 2026-07-30, 7ª rodada (a pedido do usuário): tela 13 (Check-in) ganhou form opcional de identificação do cliente (nome, CPF, telefone); nova tela 35 (Configurações Gerais do Estabelecimento) como lugar do toggle que liga essa opção. Schema: `restaurants.require_customer_checkin_info` e tabela `order_checkins`, já aplicados ao banco remoto (migration `20260730134827_consumosmart_customer_checkin_info`).
