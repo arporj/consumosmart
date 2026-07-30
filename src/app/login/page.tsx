@@ -31,6 +31,10 @@ export default async function LoginPage() {
           aria-hidden
           className="pointer-events-none absolute -bottom-32 -left-16 h-80 w-80 rounded-full bg-secondary/10 blur-3xl"
         />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-1/3 left-1/4 h-64 w-64 rounded-full bg-tertiary/10 blur-3xl"
+        />
 
         <Link href="/" className="relative font-display text-xl font-extrabold tracking-tight">
           Consumo<span className="text-primary">Smart</span>

@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# MCP local (contém a API key do Stitch em texto puro — nunca comitar)
+/.mcp.json
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

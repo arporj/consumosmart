@@ -25,12 +25,12 @@ export function LoginForm() {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-outline-variant bg-surface-container-low p-6 sm:p-8">
+    <div className="mx-auto flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-outline-variant bg-surface-container-low p-6 shadow-xl shadow-primary/5 sm:p-8">
       <div className="flex rounded-xl border border-outline-variant bg-surface-container-high p-1 text-sm font-bold">
         <button
           type="button"
           onClick={() => setMode("entrar")}
-          className={`flex-1 rounded-lg py-2 ${
+          className={`flex-1 rounded-lg py-2 transition-colors ${
             mode === "entrar" ? "bg-primary text-on-primary" : "text-on-surface-variant"
           }`}
         >
@@ -39,7 +39,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => setMode("criar")}
-          className={`flex-1 rounded-lg py-2 ${
+          className={`flex-1 rounded-lg py-2 transition-colors ${
             mode === "criar" ? "bg-primary text-on-primary" : "text-on-surface-variant"
           }`}
         >
@@ -70,7 +70,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary disabled:opacity-60"
+          className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary transition-transform hover:brightness-110 active:scale-[0.98] disabled:opacity-60 disabled:active:scale-100"
         >
           {pending ? "Aguarde…" : mode === "entrar" ? "Entrar" : "Criar conta"}
         </button>
@@ -85,10 +85,36 @@ export function LoginForm() {
       <button
         type="button"
         onClick={handleGoogle}
-        className="rounded-xl border border-outline-variant bg-surface-container-high px-4 py-3 text-sm font-bold hover:border-secondary"
+        className="rounded-xl border border-outline-variant bg-surface-container-high px-4 py-3 text-sm font-bold transition-colors hover:border-secondary"
       >
         Entrar com Google
       </button>
+
+      <p className="text-center text-xs text-on-surface-variant">
+        {mode === "entrar" ? (
+          <>
+            Não tem uma conta?{" "}
+            <button
+              type="button"
+              onClick={() => setMode("criar")}
+              className="font-bold text-primary hover:underline"
+            >
+              Cadastre-se gratuitamente
+            </button>
+          </>
+        ) : (
+          <>
+            Já tem uma conta?{" "}
+            <button
+              type="button"
+              onClick={() => setMode("entrar")}
+              className="font-bold text-primary hover:underline"
+            >
+              Entrar
+            </button>
+          </>
+        )}
+      </p>
     </div>
   );
 }
