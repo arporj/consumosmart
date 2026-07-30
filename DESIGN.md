@@ -1,54 +1,59 @@
 ---
-name: ConsumoSmart Gold Ultra
+name: ConsumoSmart Balcão Quente
 colors:
-  surface: '#0d0d0f'
-  surface-dim: '#0d0d0f'
-  surface-bright: '#1f1f24'
-  surface-container-lowest: '#050507'
-  surface-container-low: '#121216'
-  surface-container: '#18191c'
-  surface-container-high: '#222328'
-  surface-container-highest: '#2d2e35'
-  on-surface: '#f5f5f7'
-  on-surface-variant: '#a1a1aa'
-  inverse-surface: '#f5f5f7'
-  inverse-on-surface: '#18191c'
-  outline: '#3f3f46'
-  outline-variant: '#27272a'
-  surface-tint: '#f5c518'
-  primary: '#f5c518'
-  on-primary: '#0d0d0f'
-  primary-container: '#332700'
-  on-primary-container: '#ffd966'
-  secondary: '#00e676'
-  on-secondary: '#003819'
-  secondary-container: '#005227'
-  on-secondary-container: '#66ffa6'
-  tertiary: '#ff3d00'
-  on-tertiary: '#3d0900'
-  tertiary-container: '#661900'
-  on-tertiary-container: '#ff9e80'
+  surface: '#241a14'
+  surface-dim: '#1c140f'
+  surface-bright: '#3a2a1f'
+  surface-container-lowest: '#180f0b'
+  surface-container-low: '#2e2119'
+  surface-container: '#332417'
+  surface-container-high: '#3a2a1f'
+  surface-container-highest: '#46331f'
+  on-surface: '#f6ede2'
+  on-surface-variant: '#c7b29c'
+  inverse-surface: '#f6ede2'
+  inverse-on-surface: '#241a14'
+  outline: '#5c4530'
+  outline-variant: '#4a382c'
+  surface-tint: '#e6572b'
+  primary: '#e6572b'
+  on-primary: '#2a1810'
+  primary-container: '#4a2013'
+  on-primary-container: '#ffb59a'
+  secondary: '#f0a93b'
+  on-secondary: '#2a1810'
+  secondary-container: '#4a3419'
+  on-secondary-container: '#ffd699'
+  tertiary: '#4fa3a8'
+  on-tertiary: '#12201f'
+  tertiary-container: '#1f3a3c'
+  on-tertiary-container: '#a8dbe0'
   error: '#ff5252'
-  on-error: '#4a0000'
-  background: '#0d0d0f'
-  on-background: '#f5f5f7'
+  on-error: '#450000'
+  background: '#241a14'
+  on-background: '#f6ede2'
+status:
+  free: '#8fbf6f'
+  occupied: '#e6572b'
+  waiting: '#f0a93b'
+  reserved: '#4fa3a8'
 typography:
   display-lg:
-    fontFamily: Outfit
+    fontFamily: Manrope
     fontSize: 48px
     fontWeight: '800'
     lineHeight: 56px
     letterSpacing: -0.02em
   headline-md:
-    fontFamily: Outfit
+    fontFamily: Manrope
     fontSize: 32px
     fontWeight: '700'
     lineHeight: 40px
     letterSpacing: -0.01em
   title-md:
-    fontFamily: Outfit
+    fontFamily: Manrope
     fontSize: 20px
-    fontWeight: '600'
+    fontWeight: '700'
     lineHeight: 28px
   body-lg:
     fontFamily: Inter
@@ -81,17 +86,25 @@ spacing:
 ---
 
 ## Brand & Style
-ConsumoSmart é um ecossistema comercial e gastronômico premium (PDV, Atendimento, KDS e App do Cliente).
-O estilo visual é **Clean Modern Anatômico — Padrão Gold Ultra**:
-- **Superfícies:** Dark Titanium Profundo (#0D0D0F) com cards translúcidos de efeito Glassmorphism sutil.
-- **Acento Gold Ultra:** Ouro Imperial Radiante (#F5C518) usado para CTAs primários, destaques financeiros, faturamento e marca.
-- **Anatomia Visual:** Bordas finas de 1px (Hairline #27272A / #3F3F46) que contornam modais, estatísticas e comandas com cantos suaves arredondados (0.75rem / 12px).
-- **Micro-Animações & Status Indicativos:** Verde Esmeralda (#00E676) para Mesas Livres, Laranja Fogo (#FF3D00) para Mesas Ocupadas, Amarelo Ouro (#F5C518) para Aguardando Conta, Azul Safira (#29B6F6) para Reservadas.
+ConsumoSmart é um sistema de PDV, atendimento, KDS e app do cliente para comércio/restaurante — do barzinho de esquina a uma rede grande. O estilo visual é **Balcão Quente**: escuro, quente e tátil, como hardware de PDV de verdade.
+
+- **Superfícies:** Espresso escuro (`#241A14`) com camadas (`surface-container-*`) que sobem em tom conforme a elevação — sem glassmorphism, sem translucidez.
+- **Acento primário:** Paprika (`#E6572B`) para ações primárias, abas ativas e CTAs.
+- **Acento secundário:** Marigold (`#F0A93B`) para destaques financeiros, valores e o relógio do cabeçalho.
+- **Acento terciário:** Teal (`#4FA3A8`) para seleção de meio de pagamento e estados neutros de confirmação.
+- **Status de mesa (cores semânticas, não confundir com as de marca):** Livre (`#8FBF6F`), Ocupada (`#E6572B`), Aguardando Conta (`#F0A93B`), Reservada (`#4FA3A8`).
+- **Motivo do ticket:** telas de comanda/fechamento usam o metáfora de papel de ticket (`#FBEFDD` sobre fundo escuro, texto `#2A1810`, borda perfurada no topo) — reforça o hábito de "imprimir pedido" que a equipe de bar já conhece.
+- **Toque tátil:** botões e abas grandes (mín. 44px, preferencialmente 48-56px de altura), bordas grossas (2-3px) em elementos de confirmação, cantos com raio moderado (`md`/`lg`), nunca cantos totalmente quadrados nem excessivamente arredondados.
 
 ## Typography
-- **Headlines & Títulos:** `Outfit` (Visual anatômico, moderno e marcante).
-- **Corpo & Interface:** `Inter` (Máxima legibilidade touch em tablets e mobile).
-- **Métricas & Valores:** `JetBrains Mono` (Valores monetários, cronômetros de KDS e comandas).
+- **Headlines & títulos:** `Manrope` (geométrica, peso alto, amigável sem perder seriedade).
+- **Corpo & interface:** `Inter` (máxima legibilidade em densidade alta — listas de produtos, comandas).
+- **Métricas & valores:** `JetBrains Mono` (preços, totais, cronômetros de KDS, tudo que precisa alinhar em coluna).
+
+## Elementos fixos (cross-cutting, valem para todas as telas do sistema)
+- **Logo do estabelecimento:** slot fixo no cabeçalho (branding white-label), obrigatório no App do Cliente e presente no restante do sistema.
+- **Data/hora:** relógio real sempre visível no cabeçalho, atualizado ao vivo — nunca estático.
+- **Mesas:** aceitam nome customizado além de número (ex. "André"), criadas inline a partir do mapa de mesas.
 
 ## Elevation & Depth
-Cards anatômicos elevados com backdrop blur (`backdrop-filter: blur(16px)`) e bordas translúcidas de 1px.
+Sem glassmorphism. Elevação é comunicada por degraus de superfície (`surface-container-low` → `-high` → `-highest`) e por bordas de 1-2px em `outline-variant`, não por blur.
