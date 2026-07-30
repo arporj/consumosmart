@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { resolveHomePath } from "@/lib/auth/resolve-home";
+import { Logo } from "@/components/Logo";
 import { LoginForm } from "./LoginForm";
 
 const HIGHLIGHTS = [
@@ -36,8 +37,8 @@ export default async function LoginPage() {
           className="pointer-events-none absolute top-1/3 left-1/4 h-64 w-64 rounded-full bg-tertiary/10 blur-3xl"
         />
 
-        <Link href="/" className="relative font-display text-xl font-extrabold tracking-tight">
-          Consumo<span className="text-primary">Smart</span>
+        <Link href="/" className="relative">
+          <Logo markClassName="h-8 w-8" textClassName="text-xl" />
         </Link>
 
         <div className="relative flex flex-col gap-6">
@@ -62,11 +63,8 @@ export default async function LoginPage() {
       </div>
 
       <div className="flex flex-col items-center justify-center gap-8 px-5 py-16">
-        <Link
-          href="/"
-          className="font-display text-lg font-extrabold tracking-tight lg:hidden"
-        >
-          Consumo<span className="text-primary">Smart</span>
+        <Link href="/" className="lg:hidden">
+          <Logo />
         </Link>
         <LoginForm />
       </div>

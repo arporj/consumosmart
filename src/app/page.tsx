@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 
 const PLANS = [
   {
@@ -73,9 +74,7 @@ export default function LandingPage() {
     <div className="flex min-h-screen flex-col bg-surface text-on-surface">
       <header className="sticky top-0 z-50 border-b border-outline-variant/60 bg-surface/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4 sm:px-8">
-          <span className="font-display text-lg font-extrabold tracking-tight">
-            Consumo<span className="text-primary">Smart</span>
-          </span>
+          <Logo />
           <nav className="hidden items-center gap-8 sm:flex">
             <Link
               href="#recursos"
