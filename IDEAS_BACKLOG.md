@@ -28,3 +28,13 @@
 - O limite de acesso que realmente importa (só quem tem vínculo ativo naquele estabelecimento consegue logar nele) já é garantido pela regra de multi-estabelecimento (ver SCREENS_PLAN.md, "Decisões tomadas"), sem depender de horário.
 
 **O que ficou:** a parte boa da ideia — visibilidade para o gestor — virou o painel de presença em tempo real (tela 34), sem bloquear ninguém. Se um dia existir um módulo de escala de verdade, faria sentido reavaliar um modo *opcional* (não padrão) de alerta ou restrição por horário, por estabelecimento — não um bloqueio global desde o dia 1.
+
+## Login com Apple (Sign in with Apple) na tela `/login`
+
+**Status:** adiada — não descartada, só fora do primeiro corte do login unificado (2026-07-30).
+
+**A ideia:** além de e-mail/senha e Google, oferecer "Entrar com Apple" na mesma tela de login única (Cliente/Staff/SupraAdmin), útil principalmente pra clientes em iPhone.
+
+**Por que não entrou agora:** o usuário pediu explicitamente pra excluir Apple deste primeiro corte — Google já cobre a maior parte dos casos de uso e é bem mais simples de configurar (só um OAuth Client ID no Google Cloud Console + habilitar o provider no Supabase). Apple exige conta paga no Apple Developer Program, criação de um Services ID, uma chave privada (.p8) e a geração de um client secret assinado (JWT) que expira e precisa ser renovado periodicamente — processo mais longo e com manutenção contínua, sem alguém pedindo por ele ainda.
+
+**Quando reconsiderar:** quando o login por e-mail/senha + Google já estiver rodando de verdade e houver sinal real de que usuários em iPhone preferem/exigem Apple (ou a política da própria Apple passar a exigir Sign in with Apple como alternativa a outros logins sociais em apps na App Store, caso o app do cliente vire nativo). O código do `/login` já foi estruturado pra só adicionar um botão a mais quando chegar a hora (mesmo padrão do botão Google em `src/app/login/LoginForm.tsx`).
