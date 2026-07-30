@@ -1,48 +1,63 @@
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
+import { createClient } from "@/lib/supabase/server";
+import {
+  PLAN_COLUMNS,
+  PLAN_TAGLINES,
+  formatPlanPrice,
+  planFeatureList,
+  type Plan,
+} from "@/lib/plans";
 
-const PLANS = [
+// Usado só se a leitura do banco falhar (ex. Supabase fora do ar) — a landing pública não pode
+// quebrar por causa disso. Espelha o seed em supabase/migrations/..._plans_and_staff.sql.
+const FALLBACK_PLANS: Plan[] = [
   {
+    id: "starter",
     code: "starter",
     name: "Starter",
-    price: "R$ 99–119",
-    tagline: "O bar pequeno que só quer abandonar papel e caneta",
-    features: [
-      "PDV no caixa/balcão",
-      "Abertura e fechamento de conta",
-      "Cardápio digital por QR Code (só visualização)",
-    ],
-    highlight: false,
+    price_cents: 9900,
+    self_service_ordering: false,
+    kds: false,
+    reservations: false,
+    nfce_enabled: false,
+    nfce_monthly_limit: null,
+    stock_advanced: false,
+    financial_entries: false,
+    suppliers: false,
+    hr_commissions: false,
   },
   {
+    id: "essencial",
     code: "essencial",
     name: "Essencial",
-    price: "R$ 169–189",
-    tagline: "Automatize o atendimento e a cozinha, ganhe velocidade",
-    features: [
-      "Tudo do Starter",
-      "Autoatendimento: cliente pede e acompanha pelo celular",
-      "Telas de produção (Cozinha e Bar)",
-      "Reserva de mesa",
-      "Nota fiscal (com limite mensal)",
-    ],
-    highlight: true,
+    price_cents: 16900,
+    self_service_ordering: true,
+    kds: true,
+    reservations: true,
+    nfce_enabled: true,
+    nfce_monthly_limit: 50,
+    stock_advanced: false,
+    financial_entries: false,
+    suppliers: false,
+    hr_commissions: false,
   },
   {
+    id: "pro",
     code: "pro",
     name: "Pro / Gestão Total",
-    price: "R$ 289–349",
-    tagline: "Controle financeiro rigoroso, sem perder um centavo",
-    features: [
-      "Tudo do Essencial",
-      "Nota fiscal ilimitada",
-      "Estoque avançado + ficha técnica",
-      "DRE, contas a pagar/receber e fornecedores",
-      "Comissões da equipe (ponto, adiantamento, folha)",
-    ],
-    highlight: false,
+    price_cents: 28900,
+    self_service_ordering: true,
+    kds: true,
+    reservations: true,
+    nfce_enabled: true,
+    nfce_monthly_limit: null,
+    stock_advanced: true,
+    financial_entries: true,
+    suppliers: true,
+    hr_commissions: true,
   },
-] as const;
+];
 
 const BENEFITS = [
   { label: "Tempo real", tone: "text-primary" },
@@ -69,7 +84,15 @@ const TABLE_COLOR: Record<(typeof TABLE_MOCKUP)[number], string> = {
   reserved: "bg-status-reserved/80",
 };
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("plans")
+    .select(PLAN_COLUMNS)
+    .order("price_cents", { ascending: true });
+
+  const plans = data && data.length > 0 ? (data as Plan[]) : FALLBACK_PLANS;
+
   return (
     <div className="flex min-h-screen flex-col bg-surface text-on-surface">
       <header className="sticky top-0 z-50 border-b border-outline-variant/60 bg-surface/80 backdrop-blur-md">
@@ -192,48 +215,53 @@ export default function LandingPage() {
           </p>
 
           <div className="grid gap-6 sm:grid-cols-3">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.code}
-                className={`relative flex flex-col gap-4 rounded-2xl border-2 bg-surface-container-low p-6 transition-transform hover:-translate-y-1 ${
-                  plan.highlight ? "border-secondary" : "border-outline-variant"
-                }`}
-              >
-                {plan.highlight && (
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-on-secondary">
-                    Mais popular
-                  </span>
-                )}
-                <div>
-                  <h3 className="font-display text-xl font-bold">{plan.name}</h3>
-                  <p className="mt-1 text-sm text-on-surface-variant">{plan.tagline}</p>
-                </div>
-                <p className="font-mono text-3xl font-bold">
-                  {plan.price}
-                  <span className="text-base font-sans font-normal text-on-surface-variant">
-                    /mês
-                  </span>
-                </p>
-                <ul className="flex flex-1 flex-col gap-2 text-sm">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex gap-2">
-                      <span className="text-secondary">✓</span>
-                      <span className="text-on-surface-variant">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href="mailto:contato@consumosmart.app?subject=Quero%20contratar%20o%20plano"
-                  className={`mt-2 rounded-xl px-4 py-3 text-center text-sm font-bold transition-transform hover:brightness-110 active:scale-95 ${
-                    plan.highlight
-                      ? "bg-primary text-on-primary shadow-lg shadow-primary/30"
-                      : "border border-outline-variant text-on-surface hover:border-secondary"
+            {plans.map((plan) => {
+              const highlight = plan.code === "essencial";
+              return (
+                <div
+                  key={plan.code}
+                  className={`relative flex flex-col gap-4 rounded-2xl border-2 bg-surface-container-low p-6 transition-transform hover:-translate-y-1 ${
+                    highlight ? "border-secondary" : "border-outline-variant"
                   }`}
                 >
-                  Quero contratar
-                </a>
-              </div>
-            ))}
+                  {highlight && (
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-secondary px-3 py-1 text-xs font-bold text-on-secondary">
+                      Mais popular
+                    </span>
+                  )}
+                  <div>
+                    <h3 className="font-display text-xl font-bold">{plan.name}</h3>
+                    <p className="mt-1 text-sm text-on-surface-variant">
+                      {PLAN_TAGLINES[plan.code] ?? ""}
+                    </p>
+                  </div>
+                  <p className="font-mono text-3xl font-bold">
+                    {formatPlanPrice(plan.price_cents)}
+                    <span className="text-base font-sans font-normal text-on-surface-variant">
+                      /mês
+                    </span>
+                  </p>
+                  <ul className="flex flex-1 flex-col gap-2 text-sm">
+                    {planFeatureList(plan).map((feature) => (
+                      <li key={feature} className="flex gap-2">
+                        <span className="text-secondary">✓</span>
+                        <span className="text-on-surface-variant">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <a
+                    href="mailto:contato@consumosmart.app?subject=Quero%20contratar%20o%20plano"
+                    className={`mt-2 rounded-xl px-4 py-3 text-center text-sm font-bold transition-transform hover:brightness-110 active:scale-95 ${
+                      highlight
+                        ? "bg-primary text-on-primary shadow-lg shadow-primary/30"
+                        : "border border-outline-variant text-on-surface hover:border-secondary"
+                    }`}
+                  >
+                    Quero contratar
+                  </a>
+                </div>
+              );
+            })}
           </div>
         </section>
 
