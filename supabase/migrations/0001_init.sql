@@ -1,13 +1,22 @@
 -- ConsumoSmart — schema inicial
 -- Multi-tenant desde o início: organizations (rede) -> restaurants (unidade) -> tables/products/orders.
--- Este arquivo ainda não foi aplicado a nenhum projeto Supabase (scaffolding local).
+--
+-- Este projeto Supabase ("arrc") é compartilhado com outras aplicações (ex. schema
+-- "showradar"). O ConsumoSmart vive isolado no schema "consumosmart" dedicado, não em
+-- "public" — mesma instância Postgres, namespace lógico próprio, sem misturar tabelas.
 --
 -- RLS: todas as tabelas com restaurant_id têm RLS habilitado mas SEM policies ainda —
 -- ou seja, ficam inacessíveis por padrão até existir um modelo de auth (staff/organização)
 -- para basear as policies. Isso é intencional: preferimos "bloqueado por padrão" a uma
 -- policy escrita contra um esquema de auth que ainda não existe.
 
-create extension if not exists "pgcrypto";
+create schema if not exists consumosmart;
+
+-- pgcrypto já vem instalada globalmente (schema "extensions") na maioria dos projetos
+-- Supabase; garantimos aqui só por segurança, sem forçar reinstalação.
+create extension if not exists "pgcrypto" schema extensions;
+
+set search_path to consumosmart, extensions, public;
 
 create table organizations (
   id uuid primary key default gen_random_uuid(),
@@ -113,6 +122,7 @@ create table order_events (
   resolved_by uuid
 );
 
+alter table organizations enable row level security;
 alter table restaurants enable row level security;
 alter table restaurant_areas enable row level security;
 alter table tables enable row level security;
