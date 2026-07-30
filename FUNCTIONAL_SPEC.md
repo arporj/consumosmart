@@ -103,8 +103,12 @@ O ConsumoSmart é vendido em 3 planos fixos, mostrados lado a lado na Landing Pa
 
 **Para que serve:** dar ao cliente autonomia para ver o cardápio, pedir e acompanhar o pedido sem precisar chamar o garçom para tudo — e permitir que o mesmo aplicativo funcione em qualquer restaurante que use o ConsumoSmart, não só em um.
 
+**Conta própria (opcional):** o cliente pode ter uma conta no app do ConsumoSmart — não é uma conta por restaurante, é uma conta só, que funciona em qualquer estabelecimento da plataforma. Login por e-mail/senha ou pelo Google (talvez também Apple). Ter conta não é obrigatório para usar o app, mas destrava duas coisas:
+- **Encontrar bares perto de você:** uma lista dos estabelecimentos que usam o ConsumoSmart, ordenada pela distância até onde você está (usando a localização do celular e o endereço cadastrado de cada restaurante). Isso é descoberta — não substitui o check-in físico na mesa, que continua sendo por QR Code.
+- **Não preencher o mesmo formulário toda vez:** se algum dia você preencheu nome/CPF/telefone num check-in, esses dados ficam salvos no seu perfil (editável a qualquer momento) e são reaproveitados automaticamente da próxima vez que outro estabelecimento pedir a mesma coisa — em vez de digitar tudo de novo.
+
 **O que dá para fazer aqui:**
-- **Entrar na mesa** apontando a câmera do celular para um código (QR Code) que fica na própria mesa — isso identifica automaticamente o restaurante e a mesa, sem precisar digitar nada. Se o restaurante tiver ligada a preferência de identificação (Área 2), aparece um form pedindo nome, CPF e telefone antes de liberar o check-in; se não, o cliente entra direto.
+- **Entrar na mesa** apontando a câmera do celular para um código (QR Code) que fica na própria mesa — isso identifica automaticamente o restaurante e a mesa, sem precisar digitar nada. Se o restaurante tiver ligada a preferência de identificação (Área 2): sem conta, aparece o form manual de sempre (nome, CPF, telefone, sem verificação forte); com conta e dados já salvos, os campos vêm preenchidos sozinhos. Se a preferência estiver desligada, o cliente entra direto, com ou sem conta.
 - **Ver o cardápio** daquele restaurante, com fotos, descrição e preço de cada item.
 - **Montar e revisar o pedido** antes de confirmar; enquanto um item ainda não entrou em preparo na cozinha, o próprio cliente pode cancelá-lo sozinho — depois disso, só o garçom consegue.
 - **Acompanhar o andamento** de cada item pedido (recebido → em preparo → pronto → entregue), em tempo real.
