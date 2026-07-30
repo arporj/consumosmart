@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
+import { logAdminAction } from "@/lib/audit";
 
 export type UpdatePlanState = { error: string | null; success: boolean };
 
@@ -21,7 +22,7 @@ export async function updatePlan(
   _prevState: UpdatePlanState,
   formData: FormData,
 ): Promise<UpdatePlanState> {
-  await requireSystemAdmin();
+  const admin = await requireSystemAdmin();
 
   const planId = String(formData.get("plan_id") ?? "");
   const priceReais = Number(formData.get("price_reais"));
@@ -48,6 +49,12 @@ export async function updatePlan(
   if (error) {
     return { error: error.message, success: false };
   }
+
+  await logAdminAction(supabase, admin.id, "plano.atualizado", {
+    targetType: "plan",
+    targetId: planId,
+    details: update,
+  });
 
   revalidatePath("/admin/planos");
   revalidatePath("/");

@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 const NAV_ITEMS = [
   { href: "/admin/estabelecimentos", label: "Estabelecimentos", icon: "storefront" },
   { href: "/admin/planos", label: "Planos & Preços", icon: "payments" },
+  { href: "/admin/administradores", label: "Administradores", icon: "admin_panel_settings" },
+  { href: "/admin/auditoria", label: "Auditoria", icon: "history" },
 ] as const;
 
 export function AdminNav({ orientation = "vertical" }: { orientation?: "vertical" | "horizontal" }) {

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
+import { logAdminAction } from "@/lib/audit";
 
 export type UpdateEstablishmentState = { error: string | null; success: boolean };
 
@@ -10,7 +11,7 @@ export async function updateEstablishment(
   _prevState: UpdateEstablishmentState,
   formData: FormData,
 ): Promise<UpdateEstablishmentState> {
-  await requireSystemAdmin();
+  const admin = await requireSystemAdmin();
 
   const restaurantId = String(formData.get("restaurant_id") ?? "");
   const status = String(formData.get("status") ?? "");
@@ -40,6 +41,12 @@ export async function updateEstablishment(
   if (error) {
     return { error: error.message, success: false };
   }
+
+  await logAdminAction(supabase, admin.id, "estabelecimento.atualizado", {
+    targetType: "restaurant",
+    targetId: restaurantId,
+    details: { status, plan_code: planCode },
+  });
 
   revalidatePath(`/admin/estabelecimentos/${restaurantId}`);
   revalidatePath("/admin/estabelecimentos");

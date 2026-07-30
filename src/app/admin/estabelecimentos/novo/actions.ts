@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
+import { logAdminAction } from "@/lib/audit";
 
 export type CreateEstablishmentState = { error: string | null };
 
@@ -10,7 +11,7 @@ export async function createEstablishment(
   _prevState: CreateEstablishmentState,
   formData: FormData,
 ): Promise<CreateEstablishmentState> {
-  await requireSystemAdmin();
+  const admin = await requireSystemAdmin();
 
   const name = String(formData.get("name") ?? "").trim();
   const slug = String(formData.get("slug") ?? "").trim();
@@ -97,6 +98,12 @@ export async function createEstablishment(
       error: `Convite enviado, mas falhou ao vincular o responsável: ${staffError.message}`,
     };
   }
+
+  await logAdminAction(supabase, admin.id, "estabelecimento.criado", {
+    targetType: "restaurant",
+    targetId: restaurant.id,
+    details: { name, slug, plan_code: planCode, manager_email: managerEmail },
+  });
 
   redirect(`/admin/estabelecimentos/${restaurant.id}`);
 }

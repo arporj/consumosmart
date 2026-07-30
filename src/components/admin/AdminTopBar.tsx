@@ -57,21 +57,6 @@ export function AdminTopBar({
             Novo estabelecimento
           </Link>
         )}
-
-        <button
-          type="button"
-          className="p-2 text-on-surface-variant transition-colors hover:text-primary"
-          aria-label="Notificações"
-        >
-          <span className="material-symbols-outlined">notifications</span>
-        </button>
-        <button
-          type="button"
-          className="p-2 text-on-surface-variant transition-colors hover:text-primary"
-          aria-label="Configurações"
-        >
-          <span className="material-symbols-outlined">settings</span>
-        </button>
       </div>
     </header>
   );
