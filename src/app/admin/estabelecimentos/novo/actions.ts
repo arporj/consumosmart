@@ -1,11 +1,14 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
 import { logAdminAction } from "@/lib/audit";
+import { createInviteLink } from "@/lib/invite";
 
-export type CreateEstablishmentState = { error: string | null };
+export type CreateEstablishmentState = {
+  error: string | null;
+  success?: { restaurantId: string; inviteLink: string | null };
+};
 
 export async function createEstablishment(
   _prevState: CreateEstablishmentState,
@@ -21,7 +24,7 @@ export async function createEstablishment(
   const state = String(formData.get("state") ?? "").trim() || null;
   const postalCode = String(formData.get("postal_code") ?? "").trim() || null;
   const managerName = String(formData.get("manager_name") ?? "").trim();
-  const managerEmail = String(formData.get("manager_email") ?? "").trim();
+  const managerEmail = String(formData.get("manager_email") ?? "").trim().toLowerCase();
 
   if (!name || !slug || !planCode || !managerName || !managerEmail) {
     return { error: "Preencha nome, slug, plano e os dados do responsável." };
@@ -70,24 +73,36 @@ export async function createEstablishment(
     return { error: `Erro ao criar estabelecimento: ${restaurantError.message}` };
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const { data: invite, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(
-    managerEmail,
-    {
-      data: { name: managerName },
-      redirectTo: `${siteUrl}/auth/callback?next=/auth/definir-senha`,
-    },
-  );
+  let managerId: string;
+  let inviteLink: string | null = null;
 
-  if (inviteError || !invite.user) {
-    return {
-      error: `Estabelecimento criado, mas o convite ao responsável falhou: ${inviteError?.message}`,
-    };
+  const invite = await createInviteLink(supabase, managerEmail, { name: managerName });
+
+  if (invite.userId) {
+    managerId = invite.userId;
+    inviteLink = invite.link;
+  } else {
+    const alreadyExists = /already|registered|existe/i.test(invite.error ?? "");
+    if (!alreadyExists) {
+      return {
+        error: `Estabelecimento criado, mas não consegui gerar o convite: ${invite.error}`,
+      };
+    }
+    const { data: usersPage, error: listError } = await supabase.auth.admin.listUsers({
+      perPage: 200,
+    });
+    const existing = usersPage?.users.find((u) => u.email?.toLowerCase() === managerEmail);
+    if (listError || !existing) {
+      return {
+        error: `Estabelecimento criado, mas já existe um usuário com esse e-mail e não consegui localizá-lo.`,
+      };
+    }
+    managerId = existing.id;
   }
 
   const { error: staffError } = await supabase.from("staff").insert({
     restaurant_id: restaurant.id,
-    user_id: invite.user.id,
+    user_id: managerId,
     name: managerName,
     role: "gestor",
     is_active: true,
@@ -95,7 +110,7 @@ export async function createEstablishment(
 
   if (staffError) {
     return {
-      error: `Convite enviado, mas falhou ao vincular o responsável: ${staffError.message}`,
+      error: `Estabelecimento criado, mas falhou ao vincular o responsável: ${staffError.message}`,
     };
   }
 
@@ -105,5 +120,5 @@ export async function createEstablishment(
     details: { name, slug, plan_code: planCode, manager_email: managerEmail },
   });
 
-  redirect(`/admin/estabelecimentos/${restaurant.id}`);
+  return { error: null, success: { restaurantId: restaurant.id, inviteLink } };
 }

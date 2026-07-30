@@ -4,8 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
 import { logAdminAction } from "@/lib/audit";
+import { createInviteLink } from "@/lib/invite";
 
-export type AddAdminState = { error: string | null };
+export type AddAdminState = { error: string | null; inviteLink?: string | null };
 
 export async function addSystemAdmin(
   _prevState: AddAdminState,
@@ -18,17 +19,18 @@ export async function addSystemAdmin(
 
   const supabase = createAdminClient();
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const { data: invite, error: inviteError } = await supabase.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/auth/definir-senha`,
-  });
+  let userId: string;
+  let inviteLink: string | null = null;
 
-  let userId: string | undefined = invite?.user?.id;
+  const invite = await createInviteLink(supabase, email);
 
-  if (inviteError) {
-    const alreadyExists = /already|registered|existe/i.test(inviteError.message);
+  if (invite.userId) {
+    userId = invite.userId;
+    inviteLink = invite.link;
+  } else {
+    const alreadyExists = /already|registered|existe/i.test(invite.error ?? "");
     if (!alreadyExists) {
-      return { error: `Erro ao convidar: ${inviteError.message}` };
+      return { error: `Erro ao convidar: ${invite.error}` };
     }
 
     // Usuário já tem conta (staff, cliente ou outro admin) — promove a conta existente,
@@ -44,8 +46,6 @@ export async function addSystemAdmin(
     }
     userId = existing.id;
   }
-
-  if (!userId) return { error: "Não foi possível determinar o usuário." };
 
   const { error: insertError } = await supabase
     .from("system_admins")
@@ -65,7 +65,7 @@ export async function addSystemAdmin(
   });
 
   revalidatePath("/admin/administradores");
-  return { error: null };
+  return { error: null, inviteLink };
 }
 
 export type RemoveAdminState = { error: string | null };

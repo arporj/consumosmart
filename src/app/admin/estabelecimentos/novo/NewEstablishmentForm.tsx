@@ -1,10 +1,65 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 import { createEstablishment, type CreateEstablishmentState } from "./actions";
 import { formatPlanPrice, planFeatureList, type Plan } from "@/lib/plans";
 
 const initialState: CreateEstablishmentState = { error: null };
+
+function SuccessPanel({ restaurantId, inviteLink }: { restaurantId: string; inviteLink: string | null }) {
+  const [copied, setCopied] = useState(false);
+
+  return (
+    <div className="flex flex-col gap-6 rounded-2xl border-2 border-status-free bg-surface-container-low p-6 sm:p-8">
+      <div className="flex items-center gap-3">
+        <span className="material-symbols-outlined text-2xl text-status-free">check_circle</span>
+        <h2 className="font-display text-xl font-bold">Estabelecimento criado!</h2>
+      </div>
+
+      {inviteLink ? (
+        <div className="flex flex-col gap-2">
+          <p className="text-sm text-on-surface-variant">
+            O e-mail de convite não foi enviado automaticamente (o serviço de e-mail do sistema
+            tem limite de envio baixo). Copie o link abaixo e envie manualmente ao responsável —
+            é o que ele usa pra definir a própria senha e acessar.
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              readOnly
+              value={inviteLink}
+              onFocus={(event) => event.target.select()}
+              className="flex-1 rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 font-mono text-xs text-on-surface-variant outline-none"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                navigator.clipboard.writeText(inviteLink);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+              className="rounded-xl bg-primary px-5 py-3 text-sm font-bold text-on-primary transition-all hover:brightness-110"
+            >
+              {copied ? "Copiado!" : "Copiar link"}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <p className="text-sm text-on-surface-variant">
+          O responsável já tinha uma conta e foi vinculado a este estabelecimento — ele acessa
+          normalmente pelo login que já usa.
+        </p>
+      )}
+
+      <Link
+        href={`/admin/estabelecimentos/${restaurantId}`}
+        className="self-start rounded-xl border border-outline-variant bg-surface-container-high px-5 py-2.5 text-sm font-bold transition-colors hover:border-secondary"
+      >
+        Ir para o estabelecimento →
+      </Link>
+    </div>
+  );
+}
 
 const STATES = ["SP", "RJ", "MG", "PR", "SC", "RS", "BA", "DF"];
 
@@ -35,6 +90,15 @@ export function NewEstablishmentForm({ plans }: { plans: Plan[] }) {
 
   const inputClass =
     "w-full rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-on-surface outline-none focus:border-transparent focus:ring-2 focus:ring-primary";
+
+  if (state.success) {
+    return (
+      <SuccessPanel
+        restaurantId={state.success.restaurantId}
+        inviteLink={state.success.inviteLink}
+      />
+    );
+  }
 
   return (
     <form action={action} className="flex flex-col gap-6">
