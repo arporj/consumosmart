@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { signIn, signUp, type AuthState } from "./actions";
 import { createClient } from "@/lib/supabase/client";
+import { PasswordField } from "@/components/auth/PasswordField";
 
 const initialState: AuthState = { error: null };
 
@@ -57,17 +58,12 @@ export function LoginForm() {
             className="rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-on-surface outline-none focus:border-secondary"
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
-          Senha
-          <input
-            type="password"
-            name="password"
-            required
-            minLength={6}
-            autoComplete={mode === "entrar" ? "current-password" : "new-password"}
-            className="rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-on-surface outline-none focus:border-secondary"
-          />
-        </label>
+        <PasswordField
+          label="Senha"
+          name="password"
+          minLength={6}
+          autoComplete={mode === "entrar" ? "current-password" : "new-password"}
+        />
 
         {state.error && <p className="text-sm font-semibold text-error">{state.error}</p>}
 

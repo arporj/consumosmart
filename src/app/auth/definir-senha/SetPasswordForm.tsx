@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import { setPassword, type SetPasswordState } from "./actions";
+import { PasswordField } from "@/components/auth/PasswordField";
 
 const initialState: SetPasswordState = { error: null };
 
@@ -13,17 +14,7 @@ export function SetPasswordForm() {
       action={action}
       className="mx-auto flex w-full max-w-sm flex-col gap-4 rounded-2xl border border-outline-variant bg-surface-container-low p-6 sm:p-8"
     >
-      <label className="flex flex-col gap-1 text-sm">
-        Escolha uma senha
-        <input
-          type="password"
-          name="password"
-          required
-          minLength={6}
-          autoComplete="new-password"
-          className="rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 text-on-surface outline-none focus:border-secondary"
-        />
-      </label>
+      <PasswordField label="Escolha uma senha" name="password" minLength={6} autoComplete="new-password" />
 
       {state.error && <p className="text-sm font-semibold text-error">{state.error}</p>}
 
