@@ -66,7 +66,8 @@ O ConsumoSmart é vendido em 3 planos fixos, mostrados lado a lado na Landing Pa
 - **Cardápio:** cadastrar categorias e produtos, com nome, descrição, preço e para qual setor de produção cada item vai (cozinha, bar, sobremesas).
 - **Mesas e ambientes:** organizar o salão em áreas (ex. "Salão", "Varanda") e cadastrar as mesas de cada uma, com nome ou número.
 - **Marca própria (white-label):** subir a logo do estabelecimento e, se quiser, personalizar as cores para que o sistema (inclusive o app que o cliente usa na mesa) pareça "do restaurante", não do ConsumoSmart.
-- **Equipe:** cadastrar as pessoas que trabalham no estabelecimento — garçom, caixa, cozinha, bar, etc. — e o papel de cada uma. Isso é feito diretamente aqui, pelo próprio responsável, sem precisar pedir para o admin do sistema. *(liberado em todos os planos)*
+- **Equipe:** cadastrar as pessoas que trabalham no estabelecimento — garçom, caixa, cozinha, bar, etc. — e o papel de cada uma. Isso é feito diretamente aqui, pelo próprio responsável, sem precisar pedir para o admin do sistema. Uma mesma pessoa pode estar cadastrada em mais de um estabelecimento seu (ex. uma rede com 2 unidades) usando o mesmo login. *(liberado em todos os planos)*
+- **Quem está logado agora:** painel em tempo real mostrando quem da equipe está com acesso aberto no sistema neste momento, e desde que horário. Não existe restrição de horário para logar — qualquer pessoa da equipe pode entrar quando precisar — então este painel é a forma de o dono/gerente ter visibilidade sobre acessos incomuns sem travar ninguém no meio do expediente. *(liberado em todos os planos)*
 - **Relatórios:** acompanhar vendas, faturamento e desempenho do estabelecimento; o plano Pro soma a isso o DRE.
 - **Reservas:** registrar reserva de mesa com nome, telefone, horário e número de pessoas. *(planos Essencial e Pro)*
 - **Nota fiscal:** emissão do documento fiscal exigido por lei para cada venda. *(planos Essencial — com limite de notas por mês — e Pro, ilimitado; não incluso no Starter)*
@@ -84,7 +85,7 @@ O ConsumoSmart é vendido em 3 planos fixos, mostrados lado a lado na Landing Pa
 **Para que serve:** é o sistema em uso, minuto a minuto, enquanto o restaurante está funcionando e atendendo clientes.
 
 **O que dá para fazer aqui:**
-- **Entrar no sistema** informando quem é (cada pessoa tem seu próprio acesso, para que todo pedido fique registrado com o nome de quem atendeu).
+- **Entrar no sistema** informando quem é (cada pessoa tem seu próprio acesso, para que todo pedido fique registrado com o nome de quem atendeu). Quem trabalha em mais de um estabelecimento que usa o ConsumoSmart usa o mesmo login em todos — se tiver vínculo ativo em mais de um, escolhe em qual quer entrar naquele momento. Não existe bloqueio por "horário de trabalho esperado": qualquer pessoa com vínculo ativo pode entrar a qualquer hora (troca de turno de última hora é normal nesse tipo de negócio) — o que existe é visibilidade para o dono/gerente, não trava (ver Área 2).
 - **Ver o salão de relance:** um mapa das mesas mostrando quais estão livres, ocupadas, esperando a conta ou reservadas, e há quanto tempo cada uma está naquele estado.
 - **Abrir e lançar pedidos** em uma mesa: adicionar itens do cardápio, ajustar quantidade, anotar observações, dividir a conta entre pessoas, transferir uma mesa para outra ou juntar comandas.
 - **Vender no balcão**, para quem não vai sentar (viagem/retirada), sem precisar abrir uma mesa.

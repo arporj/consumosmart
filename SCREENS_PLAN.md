@@ -34,6 +34,8 @@ Status: `[ ]` não iniciada · `[~]` em progresso · `[x]` implementada em códi
   - **Fornecedores & Cotação** (tela 28) → **Pro**. Alimenta o Contas a Pagar e a Ficha Técnica do Estoque — não faz sentido isolado num plano mais barato.
   - **"Comissões"** (nome comercial do antigo Módulo 6 — RH & Folha de Pagamento) → **Pro**. Rastrear desempenho financeiro individual da equipe é dor de gestor maduro, que já paga o plano mais caro. **Exceção dentro do próprio módulo:** a tela 29 (Cadastro de Funcionários & Papéis) continua liberada em **todos os planos**, porque é pré-requisito técnico do Login Único (tela 1) — qualquer estabelecimento, mesmo Starter, precisa cadastrar seus garçons/caixas para eles conseguirem logar e operar o PDV. Só as telas 30-33 (Ponto/Falta, Adiantamento, Rateio de Taxa de Serviço, Folha de Pagamento) ficam exclusivas do Pro.
   Decidido em 2026-07-30. Ver tabela atualizada em [FUNCTIONAL_SPEC.md](./FUNCTIONAL_SPEC.md#os-3-planos-do-consumosmart).
+- [x] **Funcionário pode trabalhar em mais de um estabelecimento** — o mesmo login (`staff.user_id`) pode ter uma linha de `staff` ativa em restaurantes diferentes, cada uma com seu próprio papel. No login (tela 1), se a pessoa tiver mais de um vínculo ativo, o sistema pede pra escolher em qual estabelecimento ela quer entrar antes de liberar o acesso; se for só um, entra direto. Decidido em 2026-07-30. Não exige mudança de schema — o desenho de `staff` já suportava isso.
+- [x] **Login não é bloqueado por horário de escala** — avaliada e descartada a ideia de impedir login de um funcionário fora do horário em que ele estaria escalado naquele estabelecimento (com exceção manual liberada pelo gerente). Razão: exigiria construir um módulo de escala de trabalho que não existe em nenhuma tela do plano hoje, e um bloqueio rígido cria fricção operacional real num ambiente (bar/restaurante pequeno) onde troca de turno de última hora é comum — sem ganho de segurança proporcional, já que o limite que importa (só quem tem vínculo ativo naquele estabelecimento consegue logar) já é garantido pela regra acima. **Alternativa adotada:** todo login grava `staff_id` + `restaurant_id` + horário (registro/auditoria, sem bloquear ninguém), e a Área 2 ganha um painel "Quem está logado agora" em tempo real (tela 34) — visibilidade para o gestor sem travar a operação. Decidido em 2026-07-30.
 
 ## Decisões em aberto
 
@@ -73,7 +75,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 ## Módulo 2 — POS / Atendimento
 
 ### Fase 0 (Demo)
-- [ ] 1. Login Único Multi-Papéis
+- [ ] 1. Login Único Multi-Papéis — se a pessoa tiver vínculo ativo de `staff` em mais de um estabelecimento (mesmo login, trabalha em mais de um restaurante), pede pra escolher em qual estabelecimento entrar antes de liberar o acesso; com um só, entra direto. Todo login bem-sucedido grava `staff_id` + `restaurant_id` + horário — alimenta o painel de presença (tela 34).
 - [x] 2. Mapa de Mesas Anatômico — `src/app/(pos)/mesas/page.tsx` (áreas, mesas nomeadas ou numeradas, "+ Nova mesa"/"+ Nova área" inline, status livre/ocupada/aguardando/reservada, tempo decorrido ao vivo). Reserva em si (nome/telefone/horário do cliente) segue pendente na tela 27 — hoje é só uma nota de texto na mesa.
 - [x] 3. Comanda da Mesa & Ações — `src/app/(pos)/mesas/[tableId]/ComandaMesaClient.tsx` (pessoas, desconto, "Transferir mesa" e "Juntar comanda" implementados; "Solicitar fechamento" deixa a mesa "aguardando conta"; fechamento/pagamento reaproveita a tela 6). **Pendência:** vínculo do garçom que abriu/lançou o pedido depende do Login Único (tela 1), ainda não implementado.
 - [x] 4. Cardápio Touch PDV (Lançamento de Pedidos) — `src/app/(pos)/cardapio` (gestão) e `src/app/(pos)/balcao` (lançamento). **Pendência identificada em 2026-07-29:** ainda falta vincular nome/número do garçom em cada lançamento de pedido na mesa.
@@ -117,6 +119,7 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 - [ ] 26. Emissão de NFC-e (Fiscal) — **planos Essencial (com limite mensal de notas) e Pro (ilimitado)**; não incluso no Starter
 - [ ] 27. Reserva de Mesa — vincula ao status "reserved" do Mapa de Mesas (tela 2); horário, nome/telefone do cliente, nº de pessoas — **planos Essencial e Pro**
 - [ ] 28. Fornecedores & Cotação de Insumos — cadastro de fornecedores por insumo (mesmo item, múltiplos fornecedores), preço de compra por fornecedor/data, preço de venda e margem/lucro do produto final; comparação entre fornecedores — **plano Pro**
+- [ ] 34. Painel de Presença (Quem está logado agora) — lista em tempo real (Realtime) de quem está com acesso aberto naquele estabelecimento no momento, com horário de entrada; visibilidade para o Gestor do Estabelecimento sem travar ninguém. Adicionado em 2026-07-30 como alternativa a bloquear login por horário de escala (ver "Decisões tomadas"). **Liberado em todos os planos** — é visibilidade básica de segurança, não um recurso de gestão avançada.
 
 ## Módulo 6 — RH & Folha de Pagamento (vendido como "Comissões")
 
@@ -136,8 +139,8 @@ Ver especificação funcional detalhada (sem termos técnicos): [FUNCTIONAL_SPEC
 | Fase | Telas | Feitas |
 |---|---|---|
 | Fase 0 (Demo) | 25 | 5/25 |
-| Fase 1 (Retaguarda + RH) | 15 | 0/15 |
-| **Total** | **40** | **5/40** |
+| Fase 1 (Retaguarda + RH) | 16 | 0/16 |
+| **Total** | **41** | **5/41** |
 
 Próxima fatia sugerida: tela 1 (Login Único Multi-Papéis) — resolve as pendências de "vínculo do garçom" nas telas 3 e 4 — ou Módulo 3 (KDS), que fecha o ciclo atendimento↔cozinha usando os `order_items` que já existem no schema. Telas 0.0, 0.1, 0.2, 0.3 e 0.6 também são pré-requisito real: sem elas não existe forma de mostrar o produto, cadastrar um estabelecimento e seu responsável, nem dar suporte a ele, fora do banco de dados direto. Telas 0.4 (autoatendimento) e 0.5 (planos e preços) ficam na Fase 1 mas já têm o modelo de cobrança definido (3 planos — ver "Decisões tomadas"), então podem furar a fila se fizer sentido comercialmente.
 
@@ -152,3 +155,5 @@ Itens adicionados em 2026-07-30, 3ª rodada (Landing Page e Estrutura de 3 Plano
 Itens adicionados em 2026-07-30, 4ª rodada (a pedido do usuário, resolve a decisão em aberto da rodada anterior): Reserva de Mesa (tela 27) → Essencial; NFC-e (tela 26) → Essencial (com limite mensal) e Pro (ilimitado), fora do Starter; Contas a Pagar/Receber (tela 25) e Fornecedores (tela 28) → Pro; Módulo 6 renomeado comercialmente para "Comissões", exclusivo do Pro — **com uma ressalva editorial deste assistente, não pedida explicitamente pelo usuário**: a tela 29 (Cadastro de Funcionários) continua liberada em todos os planos, porque telas 3 e 4 (Comanda da Mesa e Lançamento de Pedidos) já dependem dela via Login Único (tela 1) para qualquer estabelecimento operar — colocá-la só no Pro travaria o Starter e o Essencial. Vale confirmar com o usuário se essa ressalva faz sentido.
 
 Itens adicionados em 2026-07-30, 5ª rodada (a pedido do usuário): schema do banco expandido com todas as tabelas restantes da retaguarda documentada nas rodadas anteriores (plans, staff, system_admins, caixa, estoque/ficha técnica, fornecedores, financeiro, fiscal, reservas, "Comissões") — aplicadas ao projeto Supabase "arrc" e versionadas em `supabase/migrations/`. Migrations locais renomeadas de `0001_init.sql` para a convenção `yyyymmddhhmmss_nome_da_migracao.sql` (14 dígitos, não só `yyyymmdd` — ver ressalva na resposta ao usuário), divididas em arquivos que espelham exatamente as migrations já aplicadas no banco remoto.
+
+Itens adicionados em 2026-07-30, 6ª rodada (a pedido do usuário, com uma ideia dele adotada e outra descartada por recomendação deste assistente): tela 1 atualizada para cobrir funcionário com vínculo em mais de um estabelecimento (escolhe qual ao logar); nova tela 34 (Painel de Presença, tempo real); decisão em aberto anterior sobre bloquear login fora de escala **descartada** (viraria fricção operacional sem ganho de segurança real) em favor de registro de login + painel de presença. A ideia de notificar o gestor via WhatsApp a cada login — cogitada como evolução do painel, mas não implementada agora — está registrada em [IDEAS_BACKLOG.md](./IDEAS_BACKLOG.md), fora deste plano e do FUNCTIONAL_SPEC porque ainda é só uma ideia futura, não uma tela decidida.
