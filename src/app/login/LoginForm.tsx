@@ -34,17 +34,27 @@ export function LoginForm() {
   const [mode, setMode] = useState<"entrar" | "criar">("entrar");
   const [signInState, signInAction, signInPending] = useActionState(signIn, initialState);
   const [signUpState, signUpAction, signUpPending] = useActionState(signUp, initialState);
+  const [googlePending, setGooglePending] = useState(false);
+  const [googleError, setGoogleError] = useState<string | null>(null);
 
   const state = mode === "entrar" ? signInState : signUpState;
   const action = mode === "entrar" ? signInAction : signUpAction;
   const pending = mode === "entrar" ? signInPending : signUpPending;
 
   async function handleGoogle() {
+    setGoogleError(null);
+    setGooglePending(true);
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
+    if (error) {
+      setGoogleError(error.message);
+      setGooglePending(false);
+    }
+    // Em sucesso o navegador é redirecionado para o Google, então o estado
+    // de pending permanece até a página trocar — não precisa ser desligado.
   }
 
   return (
@@ -108,11 +118,21 @@ export function LoginForm() {
       <button
         type="button"
         onClick={handleGoogle}
-        className="flex items-center justify-center gap-3 rounded-xl border border-[#dadce0] bg-white px-4 py-3 text-sm font-bold text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa]"
+        disabled={googlePending}
+        className="flex items-center justify-center gap-3 rounded-xl border border-[#dadce0] bg-white px-4 py-3 text-sm font-bold text-[#3c4043] shadow-sm transition-colors hover:bg-[#f8f9fa] disabled:cursor-wait disabled:opacity-70"
       >
-        <GoogleIcon />
-        Entrar com Google
+        {googlePending ? (
+          <span
+            role="status"
+            aria-label="Redirecionando"
+            className="h-5 w-5 animate-spin rounded-full border-[3px] border-[#dadce0] border-t-[#4285F4]"
+          />
+        ) : (
+          <GoogleIcon />
+        )}
+        {googlePending ? "Redirecionando…" : "Entrar com Google"}
       </button>
+      {googleError && <p className="text-center text-sm font-semibold text-error">{googleError}</p>}
 
       <p className="text-center text-xs text-on-surface-variant">
         {mode === "entrar" ? (
