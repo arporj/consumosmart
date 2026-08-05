@@ -7,11 +7,49 @@ export const dynamic = "force-dynamic";
 type Order = { id: string; table_id: string | null; status: string; guest_count: number };
 type OrderItem = { order_id: string; product_id: string; quantity: number; unit_price_cents: number };
 type OrderPayment = { order_id: string; amount_cents: number };
+type Reservation = { id: string; table_id: string | null; guest_count: number; reserved_at: string };
+
+type TableStatus = "free" | "occupied" | "waiting" | "reserved";
+
+type TableState = {
+  status: TableStatus;
+  guestCount: number;
+  totalCents: number;
+  reservedAt?: string;
+};
 
 const TONE_CHIP: Record<string, string> = {
   primary: "bg-primary-container/30 text-primary",
   secondary: "bg-secondary-container/50 text-secondary",
   tertiary: "bg-tertiary-container/20 text-tertiary",
+};
+
+const STATUS_LABEL: Record<TableStatus, string> = {
+  free: "Livre",
+  occupied: "Ocupada",
+  waiting: "Aguardando",
+  reserved: "Reservada",
+};
+
+const STATUS_DOT_CLASS: Record<TableStatus, string> = {
+  free: "bg-status-free",
+  occupied: "bg-status-occupied",
+  waiting: "bg-status-waiting",
+  reserved: "bg-status-reserved",
+};
+
+const STATUS_BADGE_CLASS: Record<TableStatus, string> = {
+  free: "bg-status-free/20 text-status-free",
+  occupied: "bg-status-occupied/20 text-status-occupied",
+  waiting: "bg-status-waiting/20 text-status-waiting",
+  reserved: "bg-status-reserved/20 text-status-reserved",
+};
+
+const STATUS_BORDER_CLASS: Record<TableStatus, string> = {
+  free: "border-status-free/40",
+  occupied: "border-status-occupied/40",
+  waiting: "border-status-waiting/40",
+  reserved: "border-status-reserved/40",
 };
 
 const ROLE_LABEL: Record<string, string> = {
@@ -46,6 +84,9 @@ export default async function GestaoDashboardPage({
 
   const startOfToday = new Date();
   startOfToday.setHours(0, 0, 0, 0);
+  const endOfToday = new Date(startOfToday);
+  endOfToday.setDate(endOfToday.getDate() + 1);
+  const now = new Date();
 
   const [
     { data: tables },
@@ -54,6 +95,7 @@ export default async function GestaoDashboardPage({
     { data: products },
     { data: staff },
     { data: todayOrders },
+    { data: upcomingReservations },
   ] = await Promise.all([
     supabase
       .from("tables")
@@ -80,6 +122,13 @@ export default async function GestaoDashboardPage({
       .eq("restaurant_id", restaurant.id)
       .gte("opened_at", startOfToday.toISOString())
       .neq("status", "canceled"),
+    supabase
+      .from("reservations")
+      .select("id, table_id, guest_count, reserved_at")
+      .eq("restaurant_id", restaurant.id)
+      .eq("status", "confirmed")
+      .gte("reserved_at", now.toISOString())
+      .lt("reserved_at", endOfToday.toISOString()),
   ]);
 
   const orderIds = (todayOrders as Order[] | null ?? []).map((order) => order.id);
@@ -102,14 +151,31 @@ export default async function GestaoDashboardPage({
   const productNameById = new Map((products ?? []).map((product) => [product.id, product.name]));
   const activeProductsCount = (products ?? []).filter((product) => product.is_active).length;
 
-  const occupiedTables = new Map<string, { guestCount: number; totalCents: number }>();
+  const tableStates = new Map<string, TableState>();
   for (const order of orders) {
-    if (order.status !== "open" || !order.table_id) continue;
+    if (!order.table_id) continue;
+    if (order.status !== "open" && order.status !== "awaiting_payment") continue;
     const totalCents = items
       .filter((item) => item.order_id === order.id)
       .reduce((sum, item) => sum + item.unit_price_cents * item.quantity, 0);
-    occupiedTables.set(order.table_id, { guestCount: order.guest_count, totalCents });
+    tableStates.set(order.table_id, {
+      status: order.status === "open" ? "occupied" : "waiting",
+      guestCount: order.guest_count,
+      totalCents,
+    });
   }
+  for (const reservation of (upcomingReservations as Reservation[] | null) ?? []) {
+    if (!reservation.table_id || tableStates.has(reservation.table_id)) continue;
+    tableStates.set(reservation.table_id, {
+      status: "reserved",
+      guestCount: reservation.guest_count,
+      totalCents: 0,
+      reservedAt: reservation.reserved_at,
+    });
+  }
+  const occupiedOrWaitingCount = [...tableStates.values()].filter(
+    (state) => state.status === "occupied" || state.status === "waiting",
+  ).length;
 
   const closedOrdersCount = orders.filter((order) => order.status === "closed").length;
   const faturamentoHojeCents = payments.reduce((sum, payment) => sum + payment.amount_cents, 0);
@@ -131,7 +197,7 @@ export default async function GestaoDashboardPage({
   const stats = [
     {
       label: "Mesas ocupadas",
-      value: `${occupiedTables.size}`,
+      value: `${occupiedOrWaitingCount}`,
       hint: `de ${(tables ?? []).length}`,
       icon: "table_restaurant",
       tone: "primary",
@@ -206,13 +272,13 @@ export default async function GestaoDashboardPage({
                 {areasCount ?? 0} área{(areasCount ?? 0) === 1 ? "" : "s"} do salão
               </p>
             </div>
-            <div className="flex items-center gap-3 text-xs text-on-surface-variant">
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-status-free" /> Livre
-              </span>
-              <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-status-occupied" /> Ocupada
-              </span>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-on-surface-variant">
+              {(["free", "occupied", "waiting", "reserved"] as const).map((status) => (
+                <span key={status} className="flex items-center gap-1.5">
+                  <span className={`h-2 w-2 rounded-full ${STATUS_DOT_CLASS[status]}`} />
+                  {STATUS_LABEL[status]}
+                </span>
+              ))}
             </div>
           </div>
 
@@ -227,35 +293,37 @@ export default async function GestaoDashboardPage({
           ) : (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
               {(tables ?? []).map((table) => {
-                const occupied = occupiedTables.get(table.id);
-                const status = occupied ? "occupied" : "free";
+                const state = tableStates.get(table.id);
+                const status = state?.status ?? "free";
+
+                let meta: string;
+                if (status === "reserved" && state?.reservedAt) {
+                  const time = new Date(state.reservedAt).toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                  meta = `${state.guestCount} pessoa${state.guestCount === 1 ? "" : "s"} · ${time}h`;
+                } else if (state) {
+                  meta = `${state.guestCount} pessoa${state.guestCount === 1 ? "" : "s"}${state.totalCents > 0 ? ` · ${formatBRL(state.totalCents)}` : ""}`;
+                } else {
+                  meta = `${table.seats ?? "—"} lugares`;
+                }
+
                 return (
                   <div
                     key={table.id}
-                    className={`flex flex-col gap-1.5 rounded-xl border bg-surface-container-highest px-3 py-2.5 shadow-sm ${
-                      status === "occupied" ? "border-status-occupied/40" : "border-status-free/40"
-                    }`}
+                    className={`flex flex-col gap-1.5 rounded-xl border bg-surface-container-highest px-3 py-2.5 shadow-sm ${STATUS_BORDER_CLASS[status]}`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-base font-extrabold">{table.label}</span>
                       <span
-                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                          status === "occupied"
-                            ? "bg-status-occupied/20 text-status-occupied"
-                            : "bg-status-free/20 text-status-free"
-                        }`}
+                        className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${STATUS_BADGE_CLASS[status]}`}
                       >
-                        <span
-                          className={`h-1.5 w-1.5 rounded-full ${status === "occupied" ? "bg-status-occupied" : "bg-status-free"}`}
-                        />
-                        {status === "occupied" ? "Ocupada" : "Livre"}
+                        <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT_CLASS[status]}`} />
+                        {STATUS_LABEL[status]}
                       </span>
                     </div>
-                    <span className="text-xs text-on-surface-variant">
-                      {occupied
-                        ? `${occupied.guestCount} pessoa${occupied.guestCount === 1 ? "" : "s"}${occupied.totalCents > 0 ? ` · ${formatBRL(occupied.totalCents)}` : ""}`
-                        : `${table.seats ?? "—"} lugares`}
-                    </span>
+                    <span className="text-xs text-on-surface-variant">{meta}</span>
                   </div>
                 );
               })}
