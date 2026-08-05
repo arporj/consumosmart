@@ -12,7 +12,7 @@ export default async function EscolherPage() {
 
   const { data: staffRows } = await supabase
     .from("staff")
-    .select("id, role, restaurants(name)")
+    .select("id, role, restaurants(name, slug)")
     .eq("user_id", user.id)
     .eq("is_active", true);
 
@@ -31,11 +31,11 @@ export default async function EscolherPage() {
           Entrar como Cliente
         </Link>
         {staffRows.map((row) => {
-          const restaurant = row.restaurants as unknown as { name: string } | null;
+          const restaurant = row.restaurants as unknown as { name: string; slug: string } | null;
           return (
             <Link
               key={row.id}
-              href="/mesas"
+              href={restaurant ? `/gestao/${restaurant.slug}/mesas` : "#"}
               className="rounded-xl bg-primary px-4 py-4 text-center text-sm font-bold text-on-primary"
             >
               Entrar em {restaurant?.name ?? "estabelecimento"} — {row.role}
