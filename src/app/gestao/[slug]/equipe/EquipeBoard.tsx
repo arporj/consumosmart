@@ -165,7 +165,7 @@ function StaffRow({
 
   return (
     <div
-      className={`flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-3 ${!member.is_active ? "opacity-50 grayscale" : ""}`}
+      className={`flex items-center justify-between rounded-xl border border-outline-variant/50 bg-surface-container-highest px-4 py-3 shadow-sm shadow-black/10 ${!member.is_active ? "opacity-50 grayscale" : ""}`}
     >
       <div className="flex flex-col">
         <span className="text-sm font-bold">{member.name}</span>
@@ -237,7 +237,7 @@ export function EquipeBoard({
   currentStaffId: string;
 }) {
   return (
-    <div className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-6 shadow-lg shadow-black/20">
       <InviteStaffInline slug={slug} />
       <div className="flex flex-col gap-2">
         {staff.map((member) => (
@@ -252,6 +252,6 @@ export function EquipeBoard({
           <p className="text-sm text-on-surface-variant">Nenhum funcionário cadastrado ainda.</p>
         )}
       </div>
-    </div>
+    </section>
   );
 }

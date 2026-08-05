@@ -9,5 +9,5 @@ export async function startImpersonationAction(
   restaurantSlug: string,
 ) {
   await startImpersonation(staffUserId, restaurantId);
-  redirect(`/gestao/${restaurantSlug}/mesas`);
+  redirect(`/gestao/${restaurantSlug}`);
 }

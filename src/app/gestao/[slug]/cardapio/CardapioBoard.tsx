@@ -202,7 +202,7 @@ function ProductRow({ slug, product }: { slug: string; product: Product }) {
 
   return (
     <div
-      className={`flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-2.5 ${!product.is_active ? "opacity-50 grayscale" : ""}`}
+      className={`flex items-center justify-between rounded-xl border border-outline-variant/50 bg-surface-container-highest px-4 py-2.5 shadow-sm shadow-black/10 ${!product.is_active ? "opacity-50 grayscale" : ""}`}
     >
       <div className="flex items-center gap-3">
         <div className="flex h-10 w-10 flex-none items-center justify-center overflow-hidden rounded-lg bg-surface-container-low">
@@ -399,7 +399,7 @@ function CategoryCard({
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant bg-surface-container-low p-6">
+    <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-6 shadow-lg shadow-black/20">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-lg font-bold">{category ? category.name : "Sem categoria"}</h3>
         {category && (

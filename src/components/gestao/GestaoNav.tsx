@@ -13,6 +13,7 @@ export function GestaoNav({
   const pathname = usePathname();
 
   const items = [
+    { href: `/gestao/${slug}`, label: "Painel", icon: "space_dashboard", exact: true },
     { href: `/gestao/${slug}/mesas`, label: "Mesas", icon: "table_restaurant" },
     { href: `/gestao/${slug}/cardapio`, label: "Cardápio", icon: "restaurant_menu" },
     { href: `/gestao/${slug}/equipe`, label: "Equipe", icon: "groups" },
@@ -27,7 +28,9 @@ export function GestaoNav({
       }
     >
       {items.map((item) => {
-        const active = pathname.startsWith(item.href);
+        const active = "exact" in item && item.exact
+          ? pathname === item.href
+          : pathname.startsWith(item.href);
         return (
           <Link
             key={item.href}

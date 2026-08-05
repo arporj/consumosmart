@@ -31,10 +31,10 @@ export default async function GestaoLayout({
         </div>
       )}
       <div className="flex flex-1 flex-col md:flex-row">
-      <aside className="hidden shrink-0 flex-col justify-between border-r border-outline-variant bg-surface p-4 shadow-md md:flex md:w-64">
+      <aside className="hidden shrink-0 flex-col justify-between border-r border-outline-variant/50 bg-surface-container-low p-4 shadow-xl shadow-black/20 md:flex md:w-64">
         <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2 px-2">
-            <Link href={`/gestao/${slug}/mesas`}>
+          <div className="flex flex-col gap-2 border-b border-outline-variant/40 px-2 pb-4">
+            <Link href={`/gestao/${slug}`}>
               <Logo markClassName="h-7 w-7" textClassName="text-base" />
             </Link>
             <div>
@@ -75,7 +75,7 @@ export default async function GestaoLayout({
       <div className="flex flex-1 flex-col">
         <header className="flex flex-col gap-3 border-b border-outline-variant/60 bg-surface-container-low px-5 py-3 md:hidden">
           <div className="flex items-center justify-between">
-            <Link href={`/gestao/${slug}/mesas`}>
+            <Link href={`/gestao/${slug}`}>
               <Logo markClassName="h-7 w-7" textClassName="text-base" />
             </Link>
             <div className="flex items-center gap-2">

@@ -35,7 +35,7 @@ export default async function EscolherPage() {
           return (
             <Link
               key={row.id}
-              href={restaurant ? `/gestao/${restaurant.slug}/mesas` : "#"}
+              href={restaurant ? `/gestao/${restaurant.slug}` : "#"}
               className="rounded-xl bg-primary px-4 py-4 text-center text-sm font-bold text-on-primary"
             >
               Entrar em {restaurant?.name ?? "estabelecimento"} — {row.role}

@@ -230,7 +230,7 @@ function TableRow({ slug, table }: { slug: string; table: Table }) {
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-outline-variant bg-surface-container-highest px-4 py-2.5">
+    <div className="flex items-center justify-between rounded-xl border border-outline-variant/50 bg-surface-container-highest px-4 py-2.5 shadow-sm shadow-black/10">
       <div className="flex items-center gap-2">
         <span className="material-symbols-outlined text-on-surface-variant">table_restaurant</span>
         <span className="text-sm font-bold">{table.label}</span>
@@ -304,7 +304,7 @@ function AreaCard({
   const [error, setError] = useState<string | null>(null);
 
   return (
-    <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant bg-surface-container-low p-6">
+    <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-6 shadow-lg shadow-black/20">
       <div className="flex items-center justify-between">
         <h3 className="font-display text-lg font-bold">{area ? area.name : "Sem área"}</h3>
         {area && (
