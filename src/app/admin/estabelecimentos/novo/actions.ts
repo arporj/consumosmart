@@ -7,7 +7,7 @@ import { createInviteLink } from "@/lib/invite";
 
 export type CreateEstablishmentState = {
   error: string | null;
-  success?: { restaurantId: string; inviteLink: string | null };
+  success?: { restaurantId: string; inviteLink: string | null; emailSent: boolean };
 };
 
 export async function createEstablishment(
@@ -75,12 +75,14 @@ export async function createEstablishment(
 
   let managerId: string;
   let inviteLink: string | null = null;
+  let emailSent = false;
 
   const invite = await createInviteLink(supabase, managerEmail, { name: managerName });
 
   if (invite.userId) {
     managerId = invite.userId;
     inviteLink = invite.link;
+    emailSent = invite.emailSent;
   } else {
     const alreadyExists = /already|registered|existe/i.test(invite.error ?? "");
     if (!alreadyExists) {
@@ -120,5 +122,5 @@ export async function createEstablishment(
     details: { name, slug, plan_code: planCode, manager_email: managerEmail },
   });
 
-  return { error: null, success: { restaurantId: restaurant.id, inviteLink } };
+  return { error: null, success: { restaurantId: restaurant.id, inviteLink, emailSent } };
 }

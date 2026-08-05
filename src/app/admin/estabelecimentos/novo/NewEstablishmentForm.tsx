@@ -7,7 +7,15 @@ import { formatPlanPrice, planFeatureList, type Plan } from "@/lib/plans";
 
 const initialState: CreateEstablishmentState = { error: null };
 
-function SuccessPanel({ restaurantId, inviteLink }: { restaurantId: string; inviteLink: string | null }) {
+function SuccessPanel({
+  restaurantId,
+  inviteLink,
+  emailSent,
+}: {
+  restaurantId: string;
+  inviteLink: string | null;
+  emailSent: boolean;
+}) {
   const [copied, setCopied] = useState(false);
 
   return (
@@ -20,9 +28,19 @@ function SuccessPanel({ restaurantId, inviteLink }: { restaurantId: string; invi
       {inviteLink ? (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-on-surface-variant">
-            O e-mail de convite não foi enviado automaticamente (o serviço de e-mail do sistema
-            tem limite de envio baixo). Copie o link abaixo e envie manualmente ao responsável —
-            é o que ele usa pra definir a própria senha e acessar.
+            {emailSent ? (
+              <>
+                Convite enviado por e-mail ao responsável. Enquanto o sistema não tem domínio
+                próprio configurado, a entrega só é garantida para o e-mail de teste cadastrado no
+                serviço — se não chegar, copie o link abaixo e envie manualmente.
+              </>
+            ) : (
+              <>
+                Não consegui enviar o e-mail de convite automaticamente. Copie o link abaixo e
+                envie manualmente ao responsável — é o que ele usa pra definir a própria senha e
+                acessar.
+              </>
+            )}
           </p>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input
@@ -96,6 +114,7 @@ export function NewEstablishmentForm({ plans }: { plans: Plan[] }) {
       <SuccessPanel
         restaurantId={state.success.restaurantId}
         inviteLink={state.success.inviteLink}
+        emailSent={state.success.emailSent}
       />
     );
   }
