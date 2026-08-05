@@ -18,9 +18,11 @@ function AddAreaInline({ slug }: { slug: string }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-3 text-sm font-bold text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-3 text-sm font-bold text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
       >
-        <span className="material-symbols-outlined">add</span>
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-surface-container-high">
+          <span className="material-symbols-outlined text-sm">add</span>
+        </span>
         Nova área
       </button>
     );
@@ -87,9 +89,11 @@ function AddTableInline({ slug, areaId }: { slug: string; areaId: string | null 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
+        className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant px-4 py-2.5 text-sm font-bold text-on-surface-variant transition-colors hover:border-primary hover:text-primary"
       >
-        <span className="material-symbols-outlined text-base">add</span>
+        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-surface-container-high">
+          <span className="material-symbols-outlined text-xs">add</span>
+        </span>
         Nova mesa
       </button>
     );
@@ -226,35 +230,40 @@ function TableRow({ slug, table }: { slug: string; table: Table }) {
   const [error, setError] = useState<string | null>(null);
 
   if (editing) {
-    return <EditTableInline slug={slug} table={table} onDone={() => setEditing(false)} />;
+    return (
+      <div className="col-span-full">
+        <EditTableInline slug={slug} table={table} onDone={() => setEditing(false)} />
+      </div>
+    );
   }
 
   return (
-    <div className="flex items-center justify-between rounded-xl border border-outline-variant/50 bg-surface-container-highest px-4 py-2.5 shadow-sm shadow-black/10">
-      <div className="flex items-center gap-2">
-        <span className="material-symbols-outlined text-on-surface-variant">table_restaurant</span>
-        <span className="text-sm font-bold">{table.label}</span>
-        {table.seats && (
-          <span className="text-xs text-on-surface-variant">{table.seats} lugares</span>
-        )}
-      </div>
-      <div className="flex items-center gap-1">
+    <div className="group relative flex flex-col items-center gap-1.5 rounded-xl border border-outline-variant/40 bg-surface-container-highest px-3 py-4 text-center shadow-sm">
+      <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           type="button"
           onClick={() => setEditing(true)}
-          className="inline-flex p-1 text-on-surface-variant transition-colors hover:text-primary"
+          className="inline-flex rounded-md p-1 text-on-surface-variant transition-colors hover:text-primary"
         >
-          <span className="material-symbols-outlined text-base">edit</span>
+          <span className="material-symbols-outlined text-sm">edit</span>
         </button>
         <button
           type="button"
           disabled={pending}
           onClick={() => setConfirmOpen(true)}
-          className="inline-flex p-1 text-on-surface-variant transition-colors hover:text-error disabled:opacity-40"
+          className="inline-flex rounded-md p-1 text-on-surface-variant transition-colors hover:text-error disabled:opacity-40"
         >
-          <span className="material-symbols-outlined text-base">delete</span>
+          <span className="material-symbols-outlined text-sm">delete</span>
         </button>
       </div>
+
+      <span className="material-symbols-outlined text-2xl text-on-surface-variant">table_restaurant</span>
+      <span className="font-mono text-lg font-extrabold">{table.label}</span>
+      {table.seats && (
+        <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant">
+          {table.seats} lugares
+        </span>
+      )}
 
       <ConfirmModal
         open={confirmOpen}
@@ -306,7 +315,13 @@ function AreaCard({
   return (
     <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-6 shadow-lg shadow-black/20">
       <div className="flex items-center justify-between">
-        <h3 className="font-display text-lg font-bold">{area ? area.name : "Sem área"}</h3>
+        <div className="flex items-center gap-2">
+          <span className="material-symbols-outlined text-on-surface-variant">table_restaurant</span>
+          <h3 className="font-display text-lg font-bold">{area ? area.name : "Sem área"}</h3>
+          <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant">
+            {tables.length} mesa{tables.length === 1 ? "" : "s"}
+          </span>
+        </div>
         {area && (
           <button
             type="button"
@@ -319,12 +334,12 @@ function AreaCard({
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {tables.map((table) => (
           <TableRow key={table.id} slug={slug} table={table} />
         ))}
         {tables.length === 0 && (
-          <p className="text-sm text-on-surface-variant">Nenhuma mesa aqui ainda.</p>
+          <p className="col-span-full text-sm text-on-surface-variant">Nenhuma mesa aqui ainda.</p>
         )}
       </div>
 
@@ -380,7 +395,7 @@ export function MesasBoard({
   const tablesWithoutArea = tables.filter((t) => t.area_id === null);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
       <AddAreaInline slug={slug} />
       {areas.map((area) => (
         <AreaCard
