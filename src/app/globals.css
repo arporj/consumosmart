@@ -1,41 +1,46 @@
 @import "tailwindcss";
 
 :root {
-  --surface: #241a14;
-  --surface-dim: #1c140f;
-  --surface-bright: #3a2a1f;
-  --surface-container-lowest: #180f0b;
-  --surface-container-low: #2e2119;
-  --surface-container: #332417;
-  --surface-container-high: #3a2a1f;
-  --surface-container-highest: #46331f;
-  --on-surface: #f6ede2;
-  --on-surface-variant: #c7b29c;
-  --outline: #5c4530;
-  --outline-variant: #4a382c;
+  /* Paleta gerada pelo Stitch (design system "ConsumoSmart Warm Dark", TONAL_SPOT
+     a partir da seed #e6572b) — copiada literal do HTML exportado do mockup do
+     Painel em 2026-08-05, pra bater cor a cor com o protótipo aprovado. */
+  --surface: #130d0b;
+  --surface-dim: #130d0b;
+  --surface-bright: #372925;
+  --surface-container-lowest: #000000;
+  --surface-container-low: #1a110f;
+  --surface-container: #221714;
+  --surface-container-high: #291d1a;
+  --surface-container-highest: #30231f;
+  --on-surface: #f9e0da;
+  --on-surface-variant: #bca6a0;
+  --outline: #84716c;
+  --outline-variant: #554440;
 
-  --primary: #e6572b;
-  --on-primary: #2a1810;
-  --primary-container: #4a2013;
-  --on-primary-container: #ffb59a;
+  --primary: #f9b7a4;
+  --on-primary: #613427;
+  --primary-container: #764638;
+  --on-primary-container: #ffdcd2;
 
-  --secondary: #f0a93b;
-  --on-secondary: #2a1810;
-  --secondary-container: #4a3419;
-  --on-secondary-container: #ffd699;
+  --secondary: #ffb952;
+  --on-secondary: #5a3900;
+  --secondary-container: #543500;
+  --on-secondary-container: #fab143;
 
-  --tertiary: #4fa3a8;
-  --on-tertiary: #12201f;
-  --tertiary-container: #1f3a3c;
-  --on-tertiary-container: #a8dbe0;
+  --tertiary: #98ebf0;
+  --on-tertiary: #006a6f;
+  --tertiary-container: #a6f9fe;
+  --on-tertiary-container: #006165;
 
-  --error: #ff5252;
-  --on-error: #450000;
+  --error: #fa746f;
+  --on-error: #490006;
+  --error-container: #871f21;
+  --on-error-container: #ff9993;
 
-  --status-free: #8fbf6f;
-  --status-occupied: #e6572b;
-  --status-waiting: #f0a93b;
-  --status-reserved: #4fa3a8;
+  --status-free: #81c784;
+  --status-occupied: #f9b7a4;
+  --status-waiting: #ffb952;
+  --status-reserved: #98ebf0;
 
   --paper: #fbefdd;
   --paper-ink: #2a1810;
@@ -73,6 +78,8 @@
 
   --color-error: var(--error);
   --color-on-error: var(--on-error);
+  --color-error-container: var(--error-container);
+  --color-on-error-container: var(--on-error-container);
 
   --color-status-free: var(--status-free);
   --color-status-occupied: var(--status-occupied);

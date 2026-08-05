@@ -9,9 +9,9 @@ type OrderItem = { order_id: string; product_id: string; quantity: number; unit_
 type OrderPayment = { order_id: string; amount_cents: number };
 
 const TONE_CHIP: Record<string, string> = {
-  primary: "bg-primary text-on-primary",
-  secondary: "bg-secondary text-on-secondary",
-  tertiary: "bg-tertiary text-on-tertiary",
+  primary: "bg-primary-container/30 text-primary",
+  secondary: "bg-secondary-container/50 text-secondary",
+  tertiary: "bg-tertiary-container/20 text-tertiary",
 };
 
 const ROLE_LABEL: Record<string, string> = {
@@ -170,7 +170,7 @@ export default async function GestaoDashboardPage({
         </div>
         <Link
           href="/balcao"
-          className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary shadow-lg shadow-black/20 transition-transform hover:-translate-y-0.5"
+          className="flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-bold text-on-primary shadow-lg shadow-primary/20 transition-transform hover:-translate-y-0.5"
         >
           <span className="material-symbols-outlined text-base">add</span>
           Nova comanda
@@ -181,7 +181,7 @@ export default async function GestaoDashboardPage({
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="flex flex-col gap-3 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-5 shadow-lg shadow-black/20"
+            className="flex flex-col gap-3 rounded-2xl border border-outline-variant/30 bg-surface-container-high p-5 shadow-md"
           >
             <span
               className={`flex h-10 w-10 items-center justify-center rounded-xl ${TONE_CHIP[stat.tone]}`}
@@ -198,7 +198,7 @@ export default async function GestaoDashboardPage({
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-6 shadow-lg shadow-black/20 lg:col-span-2">
+        <section className="flex flex-col gap-4 rounded-2xl border border-outline-variant/30 bg-surface-container p-6 shadow-md lg:col-span-2">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
               <h2 className="font-display text-lg font-bold">Mesas em tempo real</h2>
@@ -232,7 +232,9 @@ export default async function GestaoDashboardPage({
                 return (
                   <div
                     key={table.id}
-                    className="flex flex-col gap-1.5 rounded-xl border border-outline-variant/50 bg-surface-container-highest px-3 py-2.5 shadow-sm shadow-black/10"
+                    className={`flex flex-col gap-1.5 rounded-xl border bg-surface-container-highest px-3 py-2.5 shadow-sm ${
+                      status === "occupied" ? "border-status-occupied/40" : "border-status-free/40"
+                    }`}
                   >
                     <div className="flex items-center justify-between">
                       <span className="font-mono text-base font-extrabold">{table.label}</span>
@@ -262,7 +264,7 @@ export default async function GestaoDashboardPage({
         </section>
 
         <div className="flex flex-col gap-4">
-          <section className="flex flex-col gap-3 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-5 shadow-lg shadow-black/20">
+          <section className="flex flex-col gap-3 rounded-2xl border border-outline-variant/30 bg-surface-container p-5 shadow-md">
             <h2 className="font-display text-base font-bold">Mais pedidos hoje</h2>
             {topProducts.length === 0 ? (
               <p className="text-sm text-on-surface-variant">Nenhum pedido lançado hoje ainda.</p>
@@ -283,7 +285,7 @@ export default async function GestaoDashboardPage({
             )}
           </section>
 
-          <section className="flex flex-col gap-3 rounded-2xl border border-outline-variant/60 bg-surface-container-low p-5 shadow-lg shadow-black/20">
+          <section className="flex flex-col gap-3 rounded-2xl border border-outline-variant/30 bg-surface-container p-5 shadow-md">
             <div className="flex items-center justify-between">
               <h2 className="font-display text-base font-bold">Equipe</h2>
               <span className="text-xs text-on-surface-variant">
