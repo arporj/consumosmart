@@ -261,7 +261,7 @@ function TableRow({ slug, table }: { slug: string; table: Table }) {
       <span className="font-mono text-lg font-extrabold">{table.label}</span>
       {table.seats && (
         <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant">
-          {table.seats} lugares
+          {table.seats} lugar{table.seats === 1 ? "" : "es"}
         </span>
       )}
 

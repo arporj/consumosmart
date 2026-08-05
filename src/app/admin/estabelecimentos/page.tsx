@@ -246,7 +246,7 @@ export default async function EstablishmentsPage({
             <p className="text-xs text-on-surface-variant">
               {total === 0
                 ? "Nenhum resultado"
-                : `Exibindo ${showingFrom}–${showingTo} de ${total} resultados`}
+                : `Exibindo ${showingFrom}–${showingTo} de ${total} resultado${total === 1 ? "" : "s"}`}
             </p>
             <div className="flex gap-2">
               <Link

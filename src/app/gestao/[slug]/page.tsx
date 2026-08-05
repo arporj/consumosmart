@@ -306,7 +306,9 @@ export default async function GestaoDashboardPage({
                 } else if (state) {
                   meta = `${state.guestCount} pessoa${state.guestCount === 1 ? "" : "s"}${state.totalCents > 0 ? ` · ${formatBRL(state.totalCents)}` : ""}`;
                 } else {
-                  meta = `${table.seats ?? "—"} lugares`;
+                  meta = table.seats
+                    ? `${table.seats} lugar${table.seats === 1 ? "" : "es"}`
+                    : "—";
                 }
 
                 return (
@@ -396,9 +398,8 @@ export default async function GestaoDashboardPage({
       </div>
 
       <p className="text-center text-xs text-on-surface-variant/60">
-        {activeProductsCount} item{activeProductsCount === 1 ? "" : "s"} ativo
-        {activeProductsCount === 1 ? "" : "s"} em {categoriesCount ?? 0} categoria
-        {(categoriesCount ?? 0) === 1 ? "" : "s"} de cardápio.
+        {activeProductsCount} {activeProductsCount === 1 ? "item ativo" : "itens ativos"} em{" "}
+        {categoriesCount ?? 0} categoria{(categoriesCount ?? 0) === 1 ? "" : "s"} de cardápio.
       </p>
     </div>
   );

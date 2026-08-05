@@ -32,11 +32,12 @@ export default function MesasPage() {
         </div>
         <div className="flex flex-wrap gap-x-3 gap-y-1 font-mono text-[11px] text-on-surface-variant">
           <span>
-            <span className="font-extrabold text-status-free">{counts.free}</span> livres
+            <span className="font-extrabold text-status-free">{counts.free}</span>{" "}
+            livre{counts.free === 1 ? "" : "s"}
           </span>
           <span>
             <span className="font-extrabold text-status-occupied">{counts.occupied}</span>{" "}
-            ocupadas
+            ocupada{counts.occupied === 1 ? "" : "s"}
           </span>
           <span>
             <span className="font-extrabold text-status-waiting">{counts.waiting}</span>{" "}
@@ -44,7 +45,7 @@ export default function MesasPage() {
           </span>
           <span>
             <span className="font-extrabold text-status-reserved">{counts.reserved}</span>{" "}
-            reservadas
+            reservada{counts.reserved === 1 ? "" : "s"}
           </span>
         </div>
       </div>
