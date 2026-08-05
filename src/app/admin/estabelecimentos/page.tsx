@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
+import { CancelEstablishmentButton } from "./CancelEstablishmentButton";
 
 // O client de admin (service role) não usa cookies(), então o Next não tem sinal
 // nenhum de que essa página precisa ser gerada por request — sem isso, ele congelaria
@@ -220,13 +221,11 @@ export default async function EstablishmentsPage({
                         {new Date(restaurant.created_at).toLocaleDateString("pt-BR")}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link
-                          href={`/admin/estabelecimentos/${restaurant.id}`}
-                          className="inline-flex p-1 text-on-surface-variant transition-colors hover:text-primary"
-                          aria-label={`Ver detalhes de ${restaurant.name}`}
-                        >
-                          <span className="material-symbols-outlined">more_vert</span>
-                        </Link>
+                        <CancelEstablishmentButton
+                          restaurantId={restaurant.id}
+                          restaurantName={restaurant.name}
+                          disabled={restaurant.status === "canceled"}
+                        />
                       </td>
                     </tr>
                   );

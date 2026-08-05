@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { requireSystemAdmin } from "@/lib/auth/require-admin";
 import { AdminTopBar } from "@/components/admin/AdminTopBar";
 import { StatusForm } from "./StatusForm";
+import { ImpersonateButton } from "./ImpersonateButton";
 
 // Idem: client de service role não usa cookies(), então marcamos explícito em vez
 // de depender só do heurístico de rota dinâmica ([id]) pra evitar cache indevido.
@@ -36,7 +37,7 @@ export default async function EstablishmentDetailPage({
 
   const { data: staff } = await supabase
     .from("staff")
-    .select("id, name, role, is_active")
+    .select("id, name, role, is_active, user_id")
     .eq("restaurant_id", id)
     .order("created_at", { ascending: true });
 
@@ -146,13 +147,23 @@ export default async function EstablishmentDetailPage({
                           </span>
                         </div>
                       </div>
-                      {member.is_active ? (
-                        <span className="h-2 w-2 rounded-full bg-status-free shadow-[0_0_8px_rgba(143,191,111,0.5)]" />
-                      ) : (
-                        <span className="text-[9px] font-bold tracking-tighter text-outline uppercase">
-                          Inativo
-                        </span>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {member.is_active && member.user_id && (
+                          <ImpersonateButton
+                            staffUserId={member.user_id}
+                            restaurantId={restaurant.id}
+                            restaurantSlug={restaurant.slug}
+                            memberName={member.name}
+                          />
+                        )}
+                        {member.is_active ? (
+                          <span className="h-2 w-2 rounded-full bg-status-free shadow-[0_0_8px_rgba(143,191,111,0.5)]" />
+                        ) : (
+                          <span className="text-[9px] font-bold tracking-tighter text-outline uppercase">
+                            Inativo
+                          </span>
+                        )}
+                      </div>
                     </li>
                   ))}
                 </ul>

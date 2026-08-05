@@ -9,6 +9,9 @@ const PAGE_SIZE = 50;
 const ACTION_LABEL: Record<string, string> = {
   "estabelecimento.criado": "Criou estabelecimento",
   "estabelecimento.atualizado": "Atualizou estabelecimento",
+  "estabelecimento.cancelado": "Cancelou estabelecimento",
+  "impersonation.iniciada": "Iniciou simulação de funcionário",
+  "impersonation.encerrada": "Encerrou simulação de funcionário",
   "plano.atualizado": "Atualizou plano",
   "admin.adicionado": "Adicionou administrador",
   "admin.removido": "Removeu administrador",
