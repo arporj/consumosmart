@@ -3,9 +3,15 @@
 import { useState, useTransition } from "react";
 import { createArea, deleteArea, createTable, updateTable, deleteTable } from "./actions";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import type { TableState } from "@/lib/gestao/table-states";
+import { STATUS_LABEL, STATUS_DOT_CLASS, STATUS_BADGE_CLASS } from "@/lib/gestao/table-status-ui";
 
 type Area = { id: string; name: string };
 type Table = { id: string; area_id: string | null; label: string; seats: number | null };
+
+function formatBRL(cents: number) {
+  return (cents / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
 
 function AddAreaInline({ slug }: { slug: string }) {
   const [open, setOpen] = useState(false);
@@ -223,7 +229,15 @@ function EditTableInline({
   );
 }
 
-function TableRow({ slug, table }: { slug: string; table: Table }) {
+function TableRow({
+  slug,
+  table,
+  tableState,
+}: {
+  slug: string;
+  table: Table;
+  tableState?: TableState;
+}) {
   const [editing, setEditing] = useState(false);
   const [pending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -237,8 +251,18 @@ function TableRow({ slug, table }: { slug: string; table: Table }) {
     );
   }
 
+  const status = tableState?.status ?? "free";
+
   return (
     <div className="group relative flex flex-col items-center gap-1.5 rounded-xl border border-outline-variant/40 bg-surface-container-highest px-3 py-4 text-center shadow-sm">
+      {status !== "free" && (
+        <span
+          className={`absolute top-1.5 left-1.5 inline-flex items-center gap-1 rounded-full px-1.5 py-0.5 text-[8px] font-bold uppercase tracking-wide ${STATUS_BADGE_CLASS[status]}`}
+        >
+          <span className={`h-1.5 w-1.5 rounded-full ${STATUS_DOT_CLASS[status]}`} />
+          {STATUS_LABEL[status]}
+        </span>
+      )}
       <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           type="button"
@@ -257,12 +281,19 @@ function TableRow({ slug, table }: { slug: string; table: Table }) {
         </button>
       </div>
 
-      <span className="material-symbols-outlined text-2xl text-on-surface-variant">table_restaurant</span>
+      <span className="material-symbols-outlined mt-3 text-2xl text-on-surface-variant">table_restaurant</span>
       <span className="font-mono text-lg font-extrabold">{table.label}</span>
-      {table.seats && (
-        <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant">
-          {table.seats} lugar{table.seats === 1 ? "" : "es"}
+      {tableState && tableState.status !== "free" ? (
+        <span className="text-[10px] text-on-surface-variant">
+          {tableState.guestCount} pessoa{tableState.guestCount === 1 ? "" : "s"}
+          {tableState.totalCents > 0 ? ` · ${formatBRL(tableState.totalCents)}` : ""}
         </span>
+      ) : (
+        table.seats && (
+          <span className="rounded-full bg-surface-container-high px-2 py-0.5 text-[10px] font-bold text-on-surface-variant">
+            {table.seats} lugar{table.seats === 1 ? "" : "es"}
+          </span>
+        )
       )}
 
       <ConfirmModal
@@ -303,10 +334,12 @@ function AreaCard({
   slug,
   area,
   tables,
+  tableStates,
 }: {
   slug: string;
   area: Area | null;
   tables: Table[];
+  tableStates: Map<string, TableState>;
 }) {
   const [pending, startTransition] = useTransition();
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -336,7 +369,7 @@ function AreaCard({
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
         {tables.map((table) => (
-          <TableRow key={table.id} slug={slug} table={table} />
+          <TableRow key={table.id} slug={slug} table={table} tableState={tableStates.get(table.id)} />
         ))}
         {tables.length === 0 && (
           <p className="col-span-full text-sm text-on-surface-variant">Nenhuma mesa aqui ainda.</p>
@@ -387,12 +420,15 @@ export function MesasBoard({
   slug,
   areas,
   tables,
+  tableStates,
 }: {
   slug: string;
   areas: Area[];
   tables: Table[];
+  tableStates?: Map<string, TableState>;
 }) {
   const tablesWithoutArea = tables.filter((t) => t.area_id === null);
+  const states = tableStates ?? new Map<string, TableState>();
 
   return (
     <div className="flex flex-col gap-8">
@@ -403,10 +439,11 @@ export function MesasBoard({
           slug={slug}
           area={area}
           tables={tables.filter((t) => t.area_id === area.id)}
+          tableStates={states}
         />
       ))}
       {(tablesWithoutArea.length > 0 || areas.length === 0) && (
-        <AreaCard slug={slug} area={null} tables={tablesWithoutArea} />
+        <AreaCard slug={slug} area={null} tables={tablesWithoutArea} tableStates={states} />
       )}
     </div>
   );

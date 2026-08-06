@@ -1,55 +1,20 @@
 import Link from "next/link";
 import { requireGestor } from "@/lib/auth/require-gestor";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getTodayTableSummary } from "@/lib/gestao/table-states";
+import {
+  STATUS_LABEL,
+  STATUS_DOT_CLASS,
+  STATUS_BADGE_CLASS,
+  STATUS_BORDER_CLASS,
+} from "@/lib/gestao/table-status-ui";
 
 export const dynamic = "force-dynamic";
-
-type Order = { id: string; table_id: string | null; status: string; guest_count: number };
-type OrderItem = { order_id: string; product_id: string; quantity: number; unit_price_cents: number };
-type OrderPayment = { order_id: string; amount_cents: number };
-type Reservation = { id: string; table_id: string | null; guest_count: number; reserved_at: string };
-
-type TableStatus = "free" | "occupied" | "waiting" | "reserved";
-
-type TableState = {
-  status: TableStatus;
-  guestCount: number;
-  totalCents: number;
-  reservedAt?: string;
-};
 
 const TONE_CHIP: Record<string, string> = {
   primary: "bg-primary-container/30 text-primary",
   secondary: "bg-secondary-container/50 text-secondary",
   tertiary: "bg-tertiary-container/20 text-tertiary",
-};
-
-const STATUS_LABEL: Record<TableStatus, string> = {
-  free: "Livre",
-  occupied: "Ocupada",
-  waiting: "Aguardando",
-  reserved: "Reservada",
-};
-
-const STATUS_DOT_CLASS: Record<TableStatus, string> = {
-  free: "bg-status-free",
-  occupied: "bg-status-occupied",
-  waiting: "bg-status-waiting",
-  reserved: "bg-status-reserved",
-};
-
-const STATUS_BADGE_CLASS: Record<TableStatus, string> = {
-  free: "bg-status-free/20 text-status-free",
-  occupied: "bg-status-occupied/20 text-status-occupied",
-  waiting: "bg-status-waiting/20 text-status-waiting",
-  reserved: "bg-status-reserved/20 text-status-reserved",
-};
-
-const STATUS_BORDER_CLASS: Record<TableStatus, string> = {
-  free: "border-status-free/40",
-  occupied: "border-status-occupied/40",
-  waiting: "border-status-waiting/40",
-  reserved: "border-status-reserved/40",
 };
 
 const ROLE_LABEL: Record<string, string> = {
@@ -82,97 +47,34 @@ export default async function GestaoDashboardPage({
   const { restaurant } = await requireGestor(slug);
   const supabase = createAdminClient();
 
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-  const endOfToday = new Date(startOfToday);
-  endOfToday.setDate(endOfToday.getDate() + 1);
-  const now = new Date();
+  const [{ data: tables }, { count: areasCount }, { count: categoriesCount }, { data: products }, { data: staff }] =
+    await Promise.all([
+      supabase
+        .from("tables")
+        .select("id, label, seats")
+        .eq("restaurant_id", restaurant.id)
+        .order("label", { ascending: true }),
+      supabase
+        .from("restaurant_areas")
+        .select("id", { count: "exact", head: true })
+        .eq("restaurant_id", restaurant.id),
+      supabase
+        .from("product_categories")
+        .select("id", { count: "exact", head: true })
+        .eq("restaurant_id", restaurant.id),
+      supabase.from("products").select("id, name, is_active").eq("restaurant_id", restaurant.id),
+      supabase
+        .from("staff")
+        .select("id, name, role, is_active")
+        .eq("restaurant_id", restaurant.id)
+        .order("created_at", { ascending: true }),
+    ]);
 
-  const [
-    { data: tables },
-    { count: areasCount },
-    { count: categoriesCount },
-    { data: products },
-    { data: staff },
-    { data: todayOrders },
-    { data: upcomingReservations },
-  ] = await Promise.all([
-    supabase
-      .from("tables")
-      .select("id, label, seats")
-      .eq("restaurant_id", restaurant.id)
-      .order("label", { ascending: true }),
-    supabase
-      .from("restaurant_areas")
-      .select("id", { count: "exact", head: true })
-      .eq("restaurant_id", restaurant.id),
-    supabase
-      .from("product_categories")
-      .select("id", { count: "exact", head: true })
-      .eq("restaurant_id", restaurant.id),
-    supabase.from("products").select("id, name, is_active").eq("restaurant_id", restaurant.id),
-    supabase
-      .from("staff")
-      .select("id, name, role, is_active")
-      .eq("restaurant_id", restaurant.id)
-      .order("created_at", { ascending: true }),
-    supabase
-      .from("orders")
-      .select("id, table_id, status, guest_count")
-      .eq("restaurant_id", restaurant.id)
-      .gte("opened_at", startOfToday.toISOString())
-      .neq("status", "canceled"),
-    supabase
-      .from("reservations")
-      .select("id, table_id, guest_count, reserved_at")
-      .eq("restaurant_id", restaurant.id)
-      .eq("status", "confirmed")
-      .gte("reserved_at", now.toISOString())
-      .lt("reserved_at", endOfToday.toISOString()),
-  ]);
+  const { tableStates, orders, items, payments } = await getTodayTableSummary(supabase, restaurant.id);
 
-  const orderIds = (todayOrders as Order[] | null ?? []).map((order) => order.id);
-
-  const [{ data: todayItems }, { data: todayPayments }] = await Promise.all([
-    orderIds.length
-      ? supabase
-          .from("order_items")
-          .select("order_id, product_id, quantity, unit_price_cents")
-          .in("order_id", orderIds)
-      : Promise.resolve({ data: [] as OrderItem[] }),
-    orderIds.length
-      ? supabase.from("order_payments").select("order_id, amount_cents").in("order_id", orderIds)
-      : Promise.resolve({ data: [] as OrderPayment[] }),
-  ]);
-
-  const orders = (todayOrders as Order[] | null) ?? [];
-  const items = (todayItems as OrderItem[] | null) ?? [];
-  const payments = (todayPayments as OrderPayment[] | null) ?? [];
   const productNameById = new Map((products ?? []).map((product) => [product.id, product.name]));
   const activeProductsCount = (products ?? []).filter((product) => product.is_active).length;
 
-  const tableStates = new Map<string, TableState>();
-  for (const order of orders) {
-    if (!order.table_id) continue;
-    if (order.status !== "open" && order.status !== "awaiting_payment") continue;
-    const totalCents = items
-      .filter((item) => item.order_id === order.id)
-      .reduce((sum, item) => sum + item.unit_price_cents * item.quantity, 0);
-    tableStates.set(order.table_id, {
-      status: order.status === "open" ? "occupied" : "waiting",
-      guestCount: order.guest_count,
-      totalCents,
-    });
-  }
-  for (const reservation of (upcomingReservations as Reservation[] | null) ?? []) {
-    if (!reservation.table_id || tableStates.has(reservation.table_id)) continue;
-    tableStates.set(reservation.table_id, {
-      status: "reserved",
-      guestCount: reservation.guest_count,
-      totalCents: 0,
-      reservedAt: reservation.reserved_at,
-    });
-  }
   const occupiedOrWaitingCount = [...tableStates.values()].filter(
     (state) => state.status === "occupied" || state.status === "waiting",
   ).length;
