@@ -10,6 +10,7 @@ import {
   toggleProductActive,
 } from "./actions";
 import { ConfirmModal } from "@/components/ConfirmModal";
+import { cropToProductRatio } from "@/lib/image-crop";
 
 type Category = { id: string; name: string };
 type Product = {
@@ -99,6 +100,8 @@ function ProductModal({
   const [categoryId, setCategoryId] = useState(initial?.category_id ?? defaultCategoryId);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(initial?.image_url ?? null);
+  const [processingImage, setProcessingImage] = useState(false);
+  const [imageError, setImageError] = useState<string | null>(null);
 
   function reset() {
     setName(initial?.name ?? "");
@@ -108,6 +111,21 @@ function ProductModal({
     setCategoryId(initial?.category_id ?? defaultCategoryId);
     setImageFile(null);
     setImagePreview(initial?.image_url ?? null);
+    setImageError(null);
+  }
+
+  async function handleImageSelected(file: File | null) {
+    if (!file) return;
+    setProcessingImage(true);
+    try {
+      const cropped = await cropToProductRatio(file);
+      setImageFile(cropped);
+      setImagePreview(URL.createObjectURL(cropped));
+    } catch {
+      setImageError("Não foi possível processar essa imagem. Tente outro arquivo.");
+    } finally {
+      setProcessingImage(false);
+    }
   }
 
   function handleCancel() {
@@ -167,7 +185,7 @@ function ProductModal({
             <label className="mb-2 block text-sm font-semibold">Foto do prato</label>
             <label className="relative flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed border-outline-variant bg-surface-container-low transition-colors hover:border-primary/70">
               {imagePreview ? (
-                // eslint-disable-next-line @next/next/no-img-element -- preview de upload, sem otimização de imagem
+                // eslint-disable-next-line @next/next/no-img-element -- preview já cortado pra 4:3, sem otimização de imagem
                 <img src={imagePreview} alt="" className="h-full w-full object-cover" />
               ) : (
                 <>
@@ -178,21 +196,28 @@ function ProductModal({
                   </span>
                   <p className="mt-2 text-sm font-semibold">Clique para fazer upload</p>
                   <p className="text-xs text-on-surface-variant">
-                    PNG ou JPG, até 5MB · Recomendado 1200×900px (4:3)
+                    PNG ou JPG, até 5MB · cortamos pra 4:3 automaticamente
                   </p>
                 </>
+              )}
+              {processingImage && (
+                <div className="absolute inset-0 flex items-center justify-center bg-surface/80 text-xs font-bold">
+                  Ajustando imagem…
+                </div>
               )}
               <input
                 type="file"
                 accept="image/*"
+                disabled={processingImage}
                 className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                 onChange={(event) => {
                   const file = event.target.files?.[0] ?? null;
-                  setImageFile(file);
-                  if (file) setImagePreview(URL.createObjectURL(file));
+                  event.target.value = "";
+                  void handleImageSelected(file);
                 }}
               />
             </label>
+            {imageError && <p className="mt-1.5 text-xs font-semibold text-error">{imageError}</p>}
           </div>
 
           <div>
@@ -280,7 +305,7 @@ function ProductModal({
           </button>
           <button
             type="button"
-            disabled={pending || !name.trim()}
+            disabled={pending || processingImage || !name.trim()}
             onClick={handleSave}
             className="flex items-center gap-2 rounded-full bg-primary px-6 py-2.5 text-sm font-bold text-on-primary shadow-lg shadow-primary/20 transition-transform active:scale-95 disabled:opacity-60"
           >
