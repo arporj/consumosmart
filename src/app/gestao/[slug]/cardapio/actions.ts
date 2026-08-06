@@ -93,6 +93,7 @@ export async function updateProduct(
   priceCents: number,
   station: string,
   imageFile: File | null,
+  categoryId: string | null,
 ) {
   const { restaurant } = await requireGestor(slug);
   if (!name.trim()) throw new Error("Nome do produto é obrigatório.");
@@ -105,6 +106,7 @@ export async function updateProduct(
     description: description.trim() || null,
     price_cents: priceCents,
     station,
+    category_id: categoryId,
   };
 
   if (imageFile && imageFile.size > 0) {
