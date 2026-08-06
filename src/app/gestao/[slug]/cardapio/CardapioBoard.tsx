@@ -177,7 +177,9 @@ function ProductModal({
                     </span>
                   </span>
                   <p className="mt-2 text-sm font-semibold">Clique para fazer upload</p>
-                  <p className="text-xs text-on-surface-variant">PNG ou JPG, até 5MB</p>
+                  <p className="text-xs text-on-surface-variant">
+                    PNG ou JPG, até 5MB · Recomendado 1200×800px (3:2)
+                  </p>
                 </>
               )}
               <input
